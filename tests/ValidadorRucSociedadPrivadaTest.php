@@ -3,7 +3,7 @@
 namespace Tests;
 
 
-class ValidadorRucSociedadPrivada extends TestCase
+class ValidadorRucSociedadPrivadaTest extends TestCase
 {
    /**
      * Tests sobre método público validarRucSociedadPrivada()

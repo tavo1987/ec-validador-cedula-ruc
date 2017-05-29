@@ -3,7 +3,7 @@
 namespace Tests;
 
 
-class ValidadorRucSociedadPublica extends TestCase
+class ValidadorRucSociedadPublicaTest extends TestCase
 {
 
     public function test_ruc_sociedad_publica()

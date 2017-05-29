@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-class ValidadorRucPersonaNturalTest extends TestCase
+class ValidadorRucPersonaNaturalTest extends TestCase
 {
     /**
      * Tests sobre método público validarRucPersonaNatural()
