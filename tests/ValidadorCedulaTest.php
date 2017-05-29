@@ -9,11 +9,11 @@ class ValidadorCedulaTest extends TestCase
     public function test_mostrar_error_cuando_campo_cedula_este_vacio_o_sea_nulo()
     {
         $validarCedula = $this->validador->validarCedula('');
-        $this->assertEquals($validarCedula, false);
+        $this->assertFalse($validarCedula);
         $this->assertEquals($this->validador->getError(), 'Valor no puede estar vacio');
 
         $validarCedula = $this->validador->validarCedula();
-        $this->assertEquals($validarCedula, false);
+        $this->assertFalse($validarCedula);
         $this->assertEquals($this->validador->getError(), 'Valor no puede estar vacio');
     }
 
@@ -22,7 +22,7 @@ class ValidadorCedulaTest extends TestCase
         $cedula = (int) '0926687856';
         // parametro con 0 adelante pero como integer, debe dar false ya que php lo convierte a 0
         $validarCedula = $this->validador->validarCedula($cedula);
-        $this->assertEquals($validarCedula, false);
+        $this->assertFalse($validarCedula);
         $this->assertEquals($this->validador->getError(), 'Valor ingresado debe tener 10 caracteres');
     }
 
@@ -33,7 +33,7 @@ class ValidadorCedulaTest extends TestCase
 
         $resultado = $this->validador->validarCedula($cedula);
 
-        $this->assertEquals($resultado, false);
+        $this->assertFalse($resultado);
         $this->assertEquals($this->validador->getError(), 'Valor ingresado solo puede tener dígitos');
     }
 
@@ -44,7 +44,7 @@ class ValidadorCedulaTest extends TestCase
 
         $resultado = $this->validador->validarCedula($cedula);
 
-        $this->assertEquals($resultado, false);
+        $this->assertFalse($resultado);
         $this->assertEquals($this->validador->getError(), 'Valor ingresado solo puede tener dígitos');
     }
 
@@ -55,7 +55,7 @@ class ValidadorCedulaTest extends TestCase
         $cedula = '-1723468565';
 
         $resultado = $this->validador->validarCedula($cedula);
-        $this->assertEquals($resultado, false);
+        $this->assertFalse($resultado);
         $this->assertEquals($this->validador->getError(), 'Valor ingresado solo puede tener dígitos');
     }
 
@@ -64,7 +64,7 @@ class ValidadorCedulaTest extends TestCase
         $cedula = '09.26687856';
 
         $resultado = $this->validador->validarCedula($cedula);
-        $this->assertEquals($resultado, false);
+        $this->assertFalse($resultado);
         $this->assertEquals($this->validador->getError(), 'Valor ingresado solo puede tener dígitos');
     }
 
@@ -74,7 +74,7 @@ class ValidadorCedulaTest extends TestCase
 
         $resultado = $this->validador->validarCedula($cedula);
 
-        $this->assertEquals($resultado, false);
+        $this->assertFalse($resultado);
         $this->assertEquals($this->validador->getError(), 'Valor ingresado debe tener 10 caracteres');
     }
 
