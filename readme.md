@@ -5,6 +5,7 @@ Validador de Cédula y RUC de Ecuador
 <p align="center">
 <a href="https://app.codeship.com/projects/222775"><img src="https://app.codeship.com/projects/67213cf0-26f5-0135-0866-026545364f16/status?branch=master"></a>
 <a href="https://packagist.org/packages/tavo1987/ec-validador-cedula-ruc"><img src="https://img.shields.io/badge/Packagist-v1.0.0-orange.svg?style=flat-square"></a>
+<a href="https://styleci.io/repos/92779185"><img src="https://styleci.io/repos/92779185/shield"></a>
 <a href="https://packagist.org/packages/tavo1987/ec-validador-cedula-ruc"><img src="https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square"></a>
 <a href="https://packagist.org/packages/tavo1987/ec-validador-cedula-ruc"><img src="https://poser.pugx.org/tavo1987/ec-validador-cedula-ruc/downloads" alt="Total Downloads"></a>
 <a href="https://packagist.org/packages/tavo1987/ec-validador-cedula-ruc"><img src="https://poser.pugx.org/tavo1987/ec-validador-cedula-ruc/v/stable" alt="Total Downloads"></a>

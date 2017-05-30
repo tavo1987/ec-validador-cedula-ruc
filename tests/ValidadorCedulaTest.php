@@ -4,8 +4,6 @@ namespace Tests;
 
 class ValidadorCedulaTest extends TestCase
 {
-
-
     public function test_mostrar_error_cuando_campo_cedula_este_vacio_o_sea_nulo()
     {
         $validarCedula = $this->validador->validarCedula('');
@@ -26,7 +24,6 @@ class ValidadorCedulaTest extends TestCase
         $this->assertEquals($this->validador->getError(), 'Valor ingresado debe tener 10 caracteres');
     }
 
-
     public function test_validacion_falla_si_se_ingresa_letras()
     {
         $cedula = 'abcd';
@@ -39,7 +36,6 @@ class ValidadorCedulaTest extends TestCase
 
     public function test_validacion_falla_si_se_ingresa_caracteres_especiales()
     {
-
         $cedula = '*@-.#';
 
         $resultado = $this->validador->validarCedula($cedula);
@@ -48,10 +44,8 @@ class ValidadorCedulaTest extends TestCase
         $this->assertEquals($this->validador->getError(), 'Valor ingresado solo puede tener dígitos');
     }
 
-
     public function test_validacion_falla_si_se_ingresa_numeros_negativos()
     {
-
         $cedula = '-1723468565';
 
         $resultado = $this->validador->validarCedula($cedula);

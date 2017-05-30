@@ -2,7 +2,7 @@
 
 namespace Tavo;
 
-Use Exception;
+use Exception;
 
 /**
  * ValidadorEc contiene metodos para validar cédula, RUC de persona natural, RUC de sociedad privada y
@@ -16,23 +16,21 @@ Use Exception;
  */
 class ValidadorEc
 {
-
     /**
-     * Error
+     * Error.
      *
      * Contiene errores globales de la clase
      *
      * @var string
-     * @access protected
      */
     protected $error = '';
 
     /**
-     * Validar cédula
+     * Validar cédula.
      *
-     * @param  string  $numero  Número de cédula
+     * @param string $numero Número de cédula
      *
-     * @return Boolean
+     * @return bool
      */
     public function validarCedula($numero = '')
     {
@@ -50,6 +48,7 @@ class ValidadorEc
             $this->algoritmoModulo10(substr($numero, 0, 9), $numero[9]);
         } catch (Exception $e) {
             $this->setError($e->getMessage());
+
             return false;
         }
 
@@ -57,16 +56,16 @@ class ValidadorEc
     }
 
     /**
-     * Validar RUC persona natural
+     * Validar RUC persona natural.
      *
-     * @param  string  $numero  Número de RUC persona natural
+     * @param string $numero Número de RUC persona natural
      *
-     * @return Boolean
+     * @return bool
      */
     public function validarRucPersonaNatural($numero = '')
     {
         // fuerzo parametro de entrada a string
-        $numero = (string)$numero;
+        $numero = (string) $numero;
 
         // borro por si acaso errores de llamadas anteriores.
         $this->setError('');
@@ -80,24 +79,24 @@ class ValidadorEc
             $this->algoritmoModulo10(substr($numero, 0, 9), $numero[9]);
         } catch (Exception $e) {
             $this->setError($e->getMessage());
+
             return false;
         }
 
         return true;
     }
 
-
     /**
-     * Validar RUC sociedad privada
+     * Validar RUC sociedad privada.
      *
-     * @param  string  $numero  Número de RUC sociedad privada
+     * @param string $numero Número de RUC sociedad privada
      *
-     * @return Boolean
+     * @return bool
      */
     public function validarRucSociedadPrivada($numero = '')
     {
         // fuerzo parametro de entrada a string
-        $numero = (string)$numero;
+        $numero = (string) $numero;
 
         // borro por si acaso errores de llamadas anteriores.
         $this->setError('');
@@ -111,6 +110,7 @@ class ValidadorEc
             $this->algoritmoModulo11(substr($numero, 0, 9), $numero[9], 'ruc_privada');
         } catch (Exception $e) {
             $this->setError($e->getMessage());
+
             return false;
         }
 
@@ -118,16 +118,16 @@ class ValidadorEc
     }
 
     /**
-     * Validar RUC sociedad publica
+     * Validar RUC sociedad publica.
      *
-     * @param  string  $numero  Número de RUC sociedad publica
+     * @param string $numero Número de RUC sociedad publica
      *
-     * @return Boolean
+     * @return bool
      */
     public function validarRucSociedadPublica($numero = '')
     {
         // fuerzo parametro de entrada a string
-        $numero = (string)$numero;
+        $numero = (string) $numero;
 
         // borro por si acaso errores de llamadas anteriores.
         $this->setError('');
@@ -141,6 +141,7 @@ class ValidadorEc
             $this->algoritmoModulo11(substr($numero, 0, 8), $numero[8], 'ruc_publica');
         } catch (Exception $e) {
             $this->setError($e->getMessage());
+
             return false;
         }
 
@@ -148,15 +149,15 @@ class ValidadorEc
     }
 
     /**
-     * Validaciones iniciales para CI y RUC
+     * Validaciones iniciales para CI y RUC.
      *
-     * @param  string  $numero      CI o RUC
-     * @param  integer $caracteres  Cantidad de caracteres requeridos
-     *
-     * @return Boolean
+     * @param string $numero     CI o RUC
+     * @param int    $caracteres Cantidad de caracteres requeridos
      *
      * @throws exception Cuando valor esta vacio, cuando no es dígito y
-     * cuando no tiene cantidad requerida de caracteres
+     *                   cuando no tiene cantidad requerida de caracteres
+     *
+     * @return bool
      */
     protected function validarInicial($numero, $caracteres)
     {
@@ -176,13 +177,13 @@ class ValidadorEc
     }
 
     /**
-     * Validación de código de provincia (dos primeros dígitos de CI/RUC)
+     * Validación de código de provincia (dos primeros dígitos de CI/RUC).
      *
-     * @param  string  $numero  Dos primeros dígitos de CI/RUC
-     *
-     * @return boolean
+     * @param string $numero Dos primeros dígitos de CI/RUC
      *
      * @throws exception Cuando el código de provincia no esta entre 00 y 24
+     *
+     * @return bool
      */
     protected function validarCodigoProvincia($numero)
     {
@@ -194,7 +195,7 @@ class ValidadorEc
     }
 
     /**
-     * Validación de tercer dígito
+     * Validación de tercer dígito.
      *
      * Permite validad el tercer dígito del documento. Dependiendo
      * del campo tipo (tipo de identificación) se realizan las validaciones.
@@ -209,13 +210,13 @@ class ValidadorEc
      * Para RUC de sociedades públicas el terder dígito debe ser
      * igual a 6.
      *
-     * @param  string $numero  tercer dígito de CI/RUC
-     * @param  string $tipo  tipo de identificador
-     *
-     * @return boolean
+     * @param string $numero tercer dígito de CI/RUC
+     * @param string $tipo   tipo de identificador
      *
      * @throws exception Cuando el tercer digito no es válido. El mensaje
-     * de error depende del tipo de Idenficiación.
+     *                   de error depende del tipo de Idenficiación.
+     *
+     * @return bool
      */
     protected function validarTercerDigito($numero, $tipo)
     {
@@ -246,13 +247,13 @@ class ValidadorEc
     }
 
     /**
-     * Validación de código de establecimiento
+     * Validación de código de establecimiento.
      *
-     * @param  string $numero  tercer dígito de CI/RUC
-     *
-     * @return boolean
+     * @param string $numero tercer dígito de CI/RUC
      *
      * @throws exception Cuando el establecimiento es menor a 1
+     *
+     * @return bool
      */
     protected function validarCodigoEstablecimiento($numero)
     {
@@ -293,36 +294,35 @@ class ValidadorEc
      *
      * Nota: Cuando el residuo es cero(0) el dígito verificador debe ser 0.
      *
-     * @param  string $digitosIniciales   Nueve primeros dígitos de CI/RUC
-     * @param  string $digitoVerificador  Décimo dígito de CI/RUC
-     *
-     * @return boolean
+     * @param string $digitosIniciales  Nueve primeros dígitos de CI/RUC
+     * @param string $digitoVerificador Décimo dígito de CI/RUC
      *
      * @throws exception Cuando los digitosIniciales no concuerdan contra
-     * el código verificador.
+     *                   el código verificador.
+     *
+     * @return bool
      */
     protected function algoritmoModulo10($digitosIniciales, $digitoVerificador)
     {
-        $arrayCoeficientes = array(2,1,2,1,2,1,2,1,2);
+        $arrayCoeficientes = [2, 1, 2, 1, 2, 1, 2, 1, 2];
 
-        $digitoVerificador = (int)$digitoVerificador;
+        $digitoVerificador = (int) $digitoVerificador;
         $digitosIniciales = str_split($digitosIniciales);
 
         $total = 0;
         foreach ($digitosIniciales as $key => $value) {
-
-            $valorPosicion = ( (int)$value * $arrayCoeficientes[$key] );
+            $valorPosicion = ((int) $value * $arrayCoeficientes[$key]);
 
             if ($valorPosicion >= 10) {
                 $valorPosicion = str_split($valorPosicion);
                 $valorPosicion = array_sum($valorPosicion);
-                $valorPosicion = (int)$valorPosicion;
+                $valorPosicion = (int) $valorPosicion;
             }
 
             $total = $total + $valorPosicion;
         }
 
-        $residuo =  $total % 10;
+        $residuo = $total % 10;
 
         $resultado = ($residuo == 0) ? 0 : 10 - $residuo;
 
@@ -334,7 +334,7 @@ class ValidadorEc
     }
 
     /**
-     * Algoritmo Modulo11 para validar RUC de sociedades privadas y públicas
+     * Algoritmo Modulo11 para validar RUC de sociedades privadas y públicas.
      *
      * El código verificador es el decimo digito para RUC de empresas privadas
      * y el noveno dígito para RUC de empresas públicas
@@ -375,39 +375,39 @@ class ValidadorEc
      *
      * Nota: Cuando el residuo es cero(0) el dígito verificador debe ser 0.
      *
-     * @param  string $digitosIniciales   Nueve primeros dígitos de RUC
-     * @param  string $digitoVerificador  Décimo dígito de RUC
-     * @param  string $tipo Tipo de identificador
-     *
-     * @return boolean
+     * @param string $digitosIniciales  Nueve primeros dígitos de RUC
+     * @param string $digitoVerificador Décimo dígito de RUC
+     * @param string $tipo              Tipo de identificador
      *
      * @throws exception Cuando los digitosIniciales no concuerdan contra
-     * el código verificador.
+     *                   el código verificador.
+     *
+     * @return bool
      */
     protected function algoritmoModulo11($digitosIniciales, $digitoVerificador, $tipo)
     {
         switch ($tipo) {
             case 'ruc_privada':
-                $arrayCoeficientes = array(4, 3, 2, 7, 6, 5, 4, 3, 2);
+                $arrayCoeficientes = [4, 3, 2, 7, 6, 5, 4, 3, 2];
                 break;
             case 'ruc_publica':
-                $arrayCoeficientes = array(3, 2, 7, 6, 5, 4, 3, 2);
+                $arrayCoeficientes = [3, 2, 7, 6, 5, 4, 3, 2];
                 break;
             default:
                 throw new Exception('Tipo de Identificacion no existe.');
                 break;
         }
 
-        $digitoVerificador = (int)$digitoVerificador;
+        $digitoVerificador = (int) $digitoVerificador;
         $digitosIniciales = str_split($digitosIniciales);
 
         $total = 0;
         foreach ($digitosIniciales as $key => $value) {
-            $valorPosicion = ( (int)$value * $arrayCoeficientes[$key] );
+            $valorPosicion = ((int) $value * $arrayCoeficientes[$key]);
             $total = $total + $valorPosicion;
         }
 
-        $residuo =  $total % 11;
+        $residuo = $total % 11;
 
         $resultado = ($residuo == 0) ? 0 : 11 - $residuo;
 
@@ -419,7 +419,7 @@ class ValidadorEc
     }
 
     /**
-     * Get error
+     * Get error.
      *
      * @return string Mensaje de error
      */
@@ -429,14 +429,16 @@ class ValidadorEc
     }
 
     /**
-     * Set error
+     * Set error.
      *
-     * @param  string $newError
+     * @param string $newError
+     *
      * @return object $this
      */
     public function setError($newError)
     {
         $this->error = $newError;
+
         return $this;
     }
 }

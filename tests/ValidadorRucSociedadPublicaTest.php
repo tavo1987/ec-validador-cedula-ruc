@@ -2,10 +2,8 @@
 
 namespace Tests;
 
-
 class ValidadorRucSociedadPublicaTest extends TestCase
 {
-
     public function test_mostrar_error_cuando_campo_ruc_este_vacio_o_sea_nulo_en_sociedad_publica()
     {
         // parametro vacio o sin parametro (numero ci) deben dar false
@@ -40,7 +38,6 @@ class ValidadorRucSociedadPublicaTest extends TestCase
         $this->assertFalse($validarRucSociedadPublica);
         $this->assertEquals($this->validador->getError(), 'Valor ingresado solo puede tener dígitos');
     }
-
 
     public function test_ruc_de_sociedad_publica_debe_tener_trece_caracteres_exactos()
     {
