@@ -1,11 +1,14 @@
 {
     "name": "tavo1987/ec-validador-cedula-ruc",
     "description": "Validador de RUC y cédula en Ecuador",
+    "homepage": "https://github.com/tavo1987/ec-validador-cedula-ruc",
     "license": "MIT",
     "authors": [
         {
             "name": "Edwin Ramírez",
-            "email": "tavo198718@gmail.com"
+            "email": "tavo198718@gmail.com",
+            "homepage": "https://www.facebook.com/edwin.ramirez.923",
+            "role": "Developer"
         },
         {
             "name": "Bryan Suárez",
