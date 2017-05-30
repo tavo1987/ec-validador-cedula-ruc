@@ -2,7 +2,6 @@
 
 namespace Tests;
 
-
 class ValidadorRucSociedadPrivadaTest extends TestCase
 {
     public function test_validacion_falla_cuando_parametro_esta_vacio_o_es_nulo()
@@ -26,7 +25,6 @@ class ValidadorRucSociedadPrivadaTest extends TestCase
         $this->assertEquals($this->validador->getError(), 'Valor ingresado debe tener 13 caracteres');
     }
 
-
     public function test_validacion_falla_si_se_ingresa_letras()
     {
         $ruc = 'abcd';
@@ -35,12 +33,10 @@ class ValidadorRucSociedadPrivadaTest extends TestCase
 
         $this->assertFalse($validarRucSociedadPrivada);
         $this->assertEquals($this->validador->getError(), 'Valor ingresado solo puede tener dígitos');
-
     }
 
     public function test_validacion_falla_si_se_ingresa_caracteres_especiales()
     {
-
         $ruc = '*@-.#';
 
         $resultado = $this->validador->validarRucSociedadPrivada($ruc);
@@ -48,7 +44,6 @@ class ValidadorRucSociedadPrivadaTest extends TestCase
         $this->assertFalse($resultado);
         $this->assertEquals($this->validador->getError(), 'Valor ingresado solo puede tener dígitos');
     }
-
 
     public function test_validacion_falla_si_se_ingresa_numeros_negativos()
     {
@@ -78,7 +73,6 @@ class ValidadorRucSociedadPrivadaTest extends TestCase
 
         $this->assertFalse($validarRucSociedadPrivada);
         $this->assertEquals($this->validador->getError(), 'Valor ingresado debe tener 13 caracteres');
-
     }
 
     public function test_validar_que_el_codigo_provincial_sea_correcto()
@@ -127,8 +121,5 @@ class ValidadorRucSociedadPrivadaTest extends TestCase
 
         $validarRucSociedadPrivada = $this->validador->validarRucSociedadPrivada($ruc);
         $this->assertTrue($validarRucSociedadPrivada);
-
     }
-
-
 }
