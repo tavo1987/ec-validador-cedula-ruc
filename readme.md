@@ -3,10 +3,11 @@ Validador de Cédula y RUC de Ecuador
 <p align="center"><img src="http://res.cloudinary.com/edwin/image/upload/v1496095463/cedulaLogo_lmct8r.png"/></p>
 
 <p align="center">
-
-[![Packagist](https://img.shields.io/badge/Packagist-v1.0.0-orange.svg?style=flat-square)](https://packagist.org/packages/tavo1987/mini-framework)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](https://packagist.org/packages/tavo1987/mini-framework)
-
+<a href="https://app.codeship.com/projects/222775"><img src="https://app.codeship.com/projects/67213cf0-26f5-0135-0866-026545364f16/status?branch=master"></a>
+<a href="https://packagist.org/packages/tavo1987/ec-validador-cedula-ruc"><img src="https://img.shields.io/badge/Packagist-v1.0.0-orange.svg?style=flat-square"></a>
+<a href="https://packagist.org/packages/tavo1987/ec-validador-cedula-ruc"><img src="https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square"></a>
+<a href="https://packagist.org/packages/tavo1987/ec-validador-cedula-ruc"><img src="https://poser.pugx.org/tavo1987/ec-validador-cedula-ruc/downloads" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/tavo1987/ec-validador-cedula-ruc"><img src="https://poser.pugx.org/tavo1987/ec-validador-cedula-ruc/v/stable" alt="Total Downloads"></a>
 </p>
 
 Este pequeño paquete ha sido desarrollado para validar fácilmente:
@@ -76,11 +77,11 @@ en el siguiente directorio `tests`
 Cómo contribuir
 ------------
 
-Si encuentras algún error o quieres agregar más funcionalidad, por favor siéntete libré de abrir un issue o enviar un pull request, que
-lo analizaremos y agregaremos al nuestro repositorio lo mas pronto posible simpre y cuando cumpla con las siguientes reglas
+Si encuentras algún error o quieres agregar más funcionalidad, por favor siéntete libre de abrir un issue o enviar un pull request, que
+lo analizaremos y agregaremos a nuestro repositorio lo mas pronto posible siempre y cuando cumpla con las siguientes reglas
 
-- Todos los Test debe estar en verde  es decir funcionando
-- Si esbríbes una nueva funcionalidad este debe tener su propio test, para probar la misma
+- Todos los Test deben estar en verde, es decir exitosamente
+- Si escribes una nueva funcionalidad este debe tener su propio test, para probar la misma
 
 Contactos
 ------------
