@@ -4,7 +4,6 @@ namespace Tests;
 
 class ValidadorRucPersonaNaturalTest extends TestCase
 {
-
     public function test_mostrar_error_cuando_parametro_ruc_persona_natural_este_vacio_o_sea_nulo()
     {
         $validarRucPersonaNatural = $this->validador->validarRucPersonaNatural('');
@@ -14,7 +13,6 @@ class ValidadorRucPersonaNaturalTest extends TestCase
         $validarRucPersonaNatural = $this->validador->validarRucPersonaNatural();
         $this->assertEquals($validarRucPersonaNatural, false);
         $this->assertEquals($this->validador->getError(), 'Valor no puede estar vacio');
-
     }
 
     public function test_mostrar_error_si_parametro_pasado_es_un_tipo_de_dato_entero_en_ruc_persona_natural()
@@ -28,7 +26,7 @@ class ValidadorRucPersonaNaturalTest extends TestCase
 
     public function test_validacion_falla_si_se_ingresa_letras_en_ruc_persona_natural()
     {
-         // parametro debe tener solo digitos
+        // parametro debe tener solo digitos
         $ruc = 'abcdsa';
         $validarRucPersonaNatural = $this->validador->validarRucPersonaNatural($ruc);
         $this->assertEquals($validarRucPersonaNatural, false);
@@ -101,7 +99,4 @@ class ValidadorRucPersonaNaturalTest extends TestCase
         $validarRucPersonaNatural = $this->validador->validarRucPersonaNatural($ruc);
         $this->assertEquals($validarRucPersonaNatural, true);
     }
-    
-    
 }
-
