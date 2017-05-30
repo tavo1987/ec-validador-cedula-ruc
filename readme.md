@@ -28,43 +28,56 @@ Si quieres saber más sobre la lógica utilizada a este paquete puedes visitar e
  
 Instalación
 ----
-    composer require tavo1987/ec-validador-cedula-ruc
+```bash
+composer require tavo1987/ec-validador-cedula-ruc
+```
 
 Uso
 ----
 
-- Instanciar la clase y llamar al metodo para validar la identificación
+- Primero Asegúrese de requerir al archivo de carga automática de composer así:
 
+```php
+require 'vendor/autoload.php';
 ```
-// Crear nuevo objecto
+
+- Luego Instanciar la clase y llamar al método para validar la identificación
+
+Ejemplo:
+
+```php
+//Cargar el autoload de composer
+require 'vendor/autoload.php';
+
+// Crear nuevo objeto
 $validador = new Tavo\ValidadorEc;
 
 // validar CI
 if ($validador->validarCedula('0926687856')) {
     echo 'Cédula válida';
 } else {
-    echo 'Cédula incorrecta: '.$validador->getMessage();
+    echo 'Cédula incorrecta: '.$validador->getError();
 }
 
 // validar RUC persona natural
 if ($validador->validarRucPersonaNatural('0926687856001')) {
     echo 'RUC válido';
 } else {
-    echo 'RUC incorrecto: '.$validador->getMessage();
+    echo 'RUC incorrecto: '.$validador->getError();
 }
 
 // validar RUC sociedad privada
 if ($validador->validarRucSociedadPrivada('0992397535001')) {
     echo 'RUC válido';
 } else {
-    echo 'RUC incorrecto: '.$validador->getMessage();
+    echo 'RUC incorrecto: '.$validador->getError();
 }
 
 // validar RUC sociedad pública
 if ($validador->validarRucSociedadPublica('1760001550001')) {
     echo 'RUC válido';
 } else {
-    echo 'RUC incorrecto: '.$validador->getMessage();
+    echo 'RUC incorrecto: '.$validador->getError();
 }
 ```
 
@@ -72,16 +85,16 @@ if ($validador->validarRucSociedadPublica('1760001550001')) {
 Tests
 -------
 
-El paquete se encuentra con sus respectivos suite de tests (phpunit) los cuales puedes encontrarlos 
+El paquete se encuentra con su respectiva suite de tests (phpunit) los cuales puedes encontrarlos 
 en el siguiente directorio `tests`
 
 Cómo contribuir
 ------------
 
 Si encuentras algún error o quieres agregar más funcionalidad, por favor siéntete libre de abrir un issue o enviar un pull request, que
-lo analizaremos y agregaremos a nuestro repositorio lo mas pronto posible siempre y cuando cumpla con las siguientes reglas
+lo analizaremos y agregaremos a nuestro repositorio lo mas pronto posible, siempre y cuando cumpla con las siguientes reglas
 
-- Todos los Test deben estar en verde, es decir exitosamente
+- Todos los Test deben estar en verde, es decir pasar exitosamente
 - Si escribes una nueva funcionalidad este debe tener su propio test, para probar la misma
 
 Contactos
