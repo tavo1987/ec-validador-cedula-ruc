@@ -42,6 +42,7 @@ class ValidadorEc
 
         // validaciones
         try {
+            $this->validateInit($numero);
             $this->validarInicial($numero, '10');
             $this->validarCodigoProvincia(substr($numero, 0, 2));
             $this->validarTercerDigito($numero[2], 'cedula');
@@ -72,6 +73,7 @@ class ValidadorEc
 
         // validaciones
         try {
+            $this->validateInit($numero);
             $this->validarInicial($numero, '13');
             $this->validarCodigoProvincia(substr($numero, 0, 2));
             $this->validarTercerDigito($numero[2], 'ruc_natural');
@@ -103,6 +105,7 @@ class ValidadorEc
 
         // validaciones
         try {
+            $this->validateInit($numero);
             $this->validarInicial($numero, '13');
             $this->validarCodigoProvincia(substr($numero, 0, 2));
             $this->validarTercerDigito($numero[2], 'ruc_privada');
@@ -134,6 +137,7 @@ class ValidadorEc
 
         // validaciones
         try {
+            $this->validateInit($numero);
             $this->validarInicial($numero, '13');
             $this->validarCodigoProvincia(substr($numero, 0, 2));
             $this->validarTercerDigito($numero[2], 'ruc_publica');
@@ -149,16 +153,36 @@ class ValidadorEc
     }
 
     /**
-     * Validaciones iniciales para CI y RUC.
+     * Validacion del 001
      *
      * @param string $numero     CI o RUC
-     * @param int    $caracteres Cantidad de caracteres requeridos
      *
      * @throws exception Cuando valor esta vacio, cuando no es dígito y
-     *                   cuando no tiene cantidad requerida de caracteres
+     *                   cuando no es igual a 001
      *
      * @return bool
      */
+
+     protected function validateInit($numero)
+     {
+         if (empty($numero)) {
+             throw new Exception('Valor no puede estar vacio');
+         }
+
+         if (!ctype_digit($numero)) {
+             throw new Exception('Valor ingresado solo puede tener dígitos');
+         }
+
+         $rule = substr($numero, -3);
+
+         if($rule != '001'){
+           throw new Exception('El RUC o CI debe empezar por 001');
+         }
+
+
+         return true;
+     }
+
     protected function validarInicial($numero, $caracteres)
     {
         if (empty($numero)) {
