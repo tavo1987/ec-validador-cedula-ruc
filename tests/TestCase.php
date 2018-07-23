@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Tavo\Tests;
 
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use Tavo\ValidadorEc;

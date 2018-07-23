@@ -23,12 +23,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Tavo\\": "src/"
+            "Tavo\\Validador": "src/"
         }
     },
      "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tavo\\Tests\\": "tests/"
         }
     },
     "minimum-stability": "stable"

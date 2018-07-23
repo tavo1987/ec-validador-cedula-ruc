@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Tavo\Tests;
 
 class ValidadorRucPersonaNaturalTest extends TestCase
 {
