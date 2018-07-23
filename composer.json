@@ -23,7 +23,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Tavo\\Validador": "src/"
+            "Tavo\\": "src/"
         }
     },
      "autoload-dev": {
