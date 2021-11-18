@@ -223,9 +223,7 @@ class ValidadorEc
         switch ($tipo) {
             case 'cedula':
             case 'ruc_natural':
-                if ($numero < 0 || $numero > 5) {
-                    throw new Exception('Tercer dígito debe ser mayor o igual a 0 y menor a 6 para cédulas y RUC de persona natural');
-                }
+                return true;
                 break;
             case 'ruc_privada':
                 if ($numero != 9) {
