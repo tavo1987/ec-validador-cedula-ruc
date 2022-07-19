@@ -187,8 +187,8 @@ class ValidadorEc
      */
     protected function validarCodigoProvincia($numero)
     {
-        if ($numero < 0 || $numero > 24) {
-            throw new Exception('Codigo de Provincia (dos primeros dígitos) no deben ser mayor a 24 ni menores a 0');
+        if ($numero < 0 || $numero > 24 || $numero === 30) {
+            throw new Exception('Codigo de Provincia (dos primeros dígitos) no deben ser mayor a 24 ni menores a 0 o diferente de 30');
         }
 
         return true;
