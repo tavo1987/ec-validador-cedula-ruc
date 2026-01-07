@@ -7,7 +7,7 @@ namespace Tavo;
 use InvalidArgumentException;
 
 /**
- * Ecuador ID and RUC Validator
+ * Ecuador ID and RUC Validator.
  *
  * Validates Ecuadorian identification documents:
  * - Cedula (National ID - 10 digits)
@@ -60,6 +60,7 @@ final class ValidadorEc
 
         if ($length === 10) {
             $this->documentType = self::TYPE_CEDULA;
+
             return $this->performCedulaValidation($number);
         }
 
@@ -68,6 +69,7 @@ final class ValidadorEc
         }
 
         $this->error = 'Invalid document length. Cedula must have 10 digits, RUC must have 13 digits';
+
         return false;
     }
 
@@ -78,6 +80,7 @@ final class ValidadorEc
     {
         $this->error = '';
         $this->documentType = '';
+
         return $this->performCedulaValidation($number);
     }
 
@@ -88,6 +91,7 @@ final class ValidadorEc
     {
         $this->error = '';
         $this->documentType = '';
+
         return $this->performNaturalPersonRucValidation($number);
     }
 
@@ -98,6 +102,7 @@ final class ValidadorEc
     {
         $this->error = '';
         $this->documentType = '';
+
         return $this->performPrivateCompanyRucValidation($number);
     }
 
@@ -108,6 +113,7 @@ final class ValidadorEc
     {
         $this->error = '';
         $this->documentType = '';
+
         return $this->performPublicCompanyRucValidation($number);
     }
 
@@ -143,6 +149,7 @@ final class ValidadorEc
             $this->assertValidModulo10(substr($number, 0, 9), (int) $number[9]);
         } catch (InvalidArgumentException $e) {
             $this->error = $e->getMessage();
+
             return false;
         }
 
@@ -164,6 +171,7 @@ final class ValidadorEc
             $this->assertValidModulo10(substr($number, 0, 9), (int) $number[9]);
         } catch (InvalidArgumentException $e) {
             $this->error = $e->getMessage();
+
             return false;
         }
 
@@ -184,6 +192,7 @@ final class ValidadorEc
             );
         } catch (InvalidArgumentException $e) {
             $this->error = $e->getMessage();
+
             return false;
         }
 
@@ -204,6 +213,7 @@ final class ValidadorEc
             );
         } catch (InvalidArgumentException $e) {
             $this->error = $e->getMessage();
+
             return false;
         }
 
@@ -216,11 +226,13 @@ final class ValidadorEc
     {
         if (empty($number)) {
             $this->error = 'Value cannot be empty';
+
             return false;
         }
 
         if (!ctype_digit($number)) {
             $this->error = 'Value can only contain digits';
+
             return false;
         }
 
@@ -233,20 +245,24 @@ final class ValidadorEc
 
         if ($thirdDigit >= 0 && $thirdDigit <= 5) {
             $this->documentType = self::TYPE_RUC_NATURAL;
+
             return $this->performNaturalPersonRucValidation($number);
         }
 
         if ($thirdDigit === 6) {
             $this->documentType = self::TYPE_RUC_PUBLIC;
+
             return $this->performPublicCompanyRucValidation($number);
         }
 
         if ($thirdDigit === 9) {
             $this->documentType = self::TYPE_RUC_PRIVATE;
+
             return $this->performPrivateCompanyRucValidation($number);
         }
 
         $this->error = 'Invalid third digit for RUC. Must be 0-5 (natural), 6 (public), or 9 (private)';
+
         return false;
     }
 
@@ -281,18 +297,18 @@ final class ValidadorEc
         $isValid = match ($type) {
             self::TYPE_CEDULA, self::TYPE_RUC_NATURAL => $digit >= 0 && $digit <= 5,
             self::TYPE_RUC_PRIVATE => $digit === 9,
-            self::TYPE_RUC_PUBLIC => $digit === 6,
-            default => throw new InvalidArgumentException('Invalid identification type'),
+            self::TYPE_RUC_PUBLIC  => $digit === 6,
+            default                => throw new InvalidArgumentException('Invalid identification type'),
         };
 
         if (!$isValid) {
             $message = match ($type) {
-                self::TYPE_CEDULA, self::TYPE_RUC_NATURAL =>
-                    'Third digit must be between 0 and 5 for cedula and natural person RUC',
+                self::TYPE_CEDULA, self::TYPE_RUC_NATURAL => 'Third digit must be between 0 and 5 for cedula and natural person RUC',
                 self::TYPE_RUC_PRIVATE => 'Third digit must be 9 for private companies',
-                self::TYPE_RUC_PUBLIC => 'Third digit must be 6 for public companies',
-                default => 'Invalid identification type',
+                self::TYPE_RUC_PUBLIC  => 'Third digit must be 6 for public companies',
+                default                => 'Invalid identification type',
             };
+
             throw new InvalidArgumentException($message);
         }
     }

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Tavo\Tests;
 
-use Tavo\ValidadorEc;
-
 class PublicCompanyRucValidationTest extends TestCase
 {
     public function test_empty_ruc_fails(): void
@@ -88,7 +86,7 @@ class PublicCompanyRucValidationTest extends TestCase
     // ==================== Issue #3 Analysis ====================
 
     /**
-     * Issue #3 - RUC that was reported as not passing validation
+     * Issue #3 - RUC that was reported as not passing validation.
      *
      * RUC: 0962893970001
      * - First 2 digits: 09 (Guayas - valid)
