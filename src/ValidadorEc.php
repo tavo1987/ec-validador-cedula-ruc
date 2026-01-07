@@ -127,44 +127,6 @@ final class ValidadorEc
         return $this->error;
     }
 
-    // ==================== Legacy Methods (Backwards Compatibility) ====================
-
-    /** @deprecated Use validate() instead */
-    public function validar(string $number = ''): bool
-    {
-        return $this->validate($number);
-    }
-
-    /** @deprecated Use validateCedula() instead */
-    public function validarCedula(string $number = ''): bool
-    {
-        return $this->validateCedula($number);
-    }
-
-    /** @deprecated Use validateNaturalPersonRuc() instead */
-    public function validarRucPersonaNatural(string $number = ''): bool
-    {
-        return $this->validateNaturalPersonRuc($number);
-    }
-
-    /** @deprecated Use validatePrivateCompanyRuc() instead */
-    public function validarRucSociedadPrivada(string $number = ''): bool
-    {
-        return $this->validatePrivateCompanyRuc($number);
-    }
-
-    /** @deprecated Use validatePublicCompanyRuc() instead */
-    public function validarRucSociedadPublica(string $number = ''): bool
-    {
-        return $this->validatePublicCompanyRuc($number);
-    }
-
-    /** @deprecated Use getDocumentType() instead */
-    public function getTipoDocumento(): string
-    {
-        return $this->getDocumentType();
-    }
-
     // ==================== Internal Validation Methods ====================
 
     private function performCedulaValidation(string $number): bool

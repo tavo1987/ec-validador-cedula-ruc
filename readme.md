@@ -115,19 +115,6 @@ ValidadorEc::TYPE_RUC_PUBLIC   // 'ruc_public'
 | `getDocumentType()` | Get detected document type after validation |
 | `getError()` | Get error message from last validation |
 
-### Legacy Methods (Deprecated)
-
-For backwards compatibility, Spanish method names are still available:
-
-| Legacy Method | Use Instead |
-|--------------|-------------|
-| `validar()` | `validate()` |
-| `validarCedula()` | `validateCedula()` |
-| `validarRucPersonaNatural()` | `validateNaturalPersonRuc()` |
-| `validarRucSociedadPrivada()` | `validatePrivateCompanyRuc()` |
-| `validarRucSociedadPublica()` | `validatePublicCompanyRuc()` |
-| `getTipoDocumento()` | `getDocumentType()` |
-
 ## Document Structure
 
 | Document Type | Digits | Third Digit | Algorithm |
@@ -200,14 +187,15 @@ This library uses algorithmic validation (Modulo 10/11). Known limitations:
 
 ### v2.0.0
 - **Breaking**: Minimum PHP version is now 8.1
+- **Breaking**: All method names now in English
 - **Breaking**: Constants renamed (`TIPO_*` → `TYPE_*`)
-- Added English method names (`validate()`, `validateCedula()`, etc.)
-- Added `getDocumentType()` method
-- Added support for province code 30 (foreign residents)
-- Legacy Spanish method names still work (deprecated)
+- **Breaking**: Removed all Spanish method names
+- New universal `validate()` method with auto-detection
+- New `getDocumentType()` method
+- Support for province code 30 (foreign residents)
 - Class is now `final`
 - Optimized with `match` expressions
-- 68 comprehensive tests
+- 77 comprehensive tests
 
 ### v1.0.2
 - Fixed namespace issues
