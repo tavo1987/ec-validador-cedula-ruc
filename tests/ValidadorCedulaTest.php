@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Tavo\Tests;
 
-use Tavo\ValidadorEc;
-
 class ValidadorCedulaTest extends TestCase
 {
     public function test_mostrar_error_cuando_campo_cedula_este_vacio_o_sea_nulo(): void

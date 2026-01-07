@@ -7,7 +7,7 @@ namespace Tavo\Tests;
 use Tavo\ValidadorEc;
 
 /**
- * Test suite for the universal validar() method
+ * Test suite for the universal validar() method.
  *
  * This method auto-detects document type and validates accordingly:
  * - 10 digits: Cedula
@@ -114,7 +114,7 @@ class ValidadorUniversalTest extends TestCase
     }
 
     /**
-     * Issue #3 - Using universal validator to auto-detect RUC type
+     * Issue #3 - Using universal validator to auto-detect RUC type.
      *
      * The RUC 0962893970001 is detected as public company (third digit 6),
      * but fails validation because the check digit is incorrect.
