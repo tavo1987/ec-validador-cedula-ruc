@@ -215,9 +215,3 @@ MIT License - see [LICENSE](LICENCE) file for details.
 
 **Bryan Suarez**
 - Twitter: [@BryanSC_7](https://twitter.com/BryanSC_7)
-
-## Credits
-
-Based on [validacion-cedula-ruc-ecuador](https://github.com/diaspar/validacion-cedula-ruc-ecuador) by [diaspar](https://github.com/diaspar).
-
-For validation logic details: [How to validate Cedula and RUC in Ecuador](https://medium.com/@bryansuarez/c%C3%B3mo-validar-c%C3%A9dula-y-ruc-en-ecuador-b62c5666186f) (Spanish).
