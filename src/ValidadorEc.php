@@ -30,12 +30,71 @@ final class ValidadorEc
     private const FOREIGN_RESIDENT_CODE = 30;
 
     // Validation algorithms coefficients
+    /** @var list<int> */
     private const MODULO_10_COEFFICIENTS = [2, 1, 2, 1, 2, 1, 2, 1, 2];
+
+    /** @var list<int> */
     private const MODULO_11_PRIVATE_COEFFICIENTS = [4, 3, 2, 7, 6, 5, 4, 3, 2];
+
+    /** @var list<int> */
     private const MODULO_11_PUBLIC_COEFFICIENTS = [3, 2, 7, 6, 5, 4, 3, 2];
 
     private string $error = '';
     private string $documentType = '';
+
+    // ==================== Static Methods ====================
+
+    /**
+     * Quick validation without instantiation.
+     *
+     * @param string $number Document number to validate
+     * @return bool True if valid, false otherwise
+     *
+     * @example
+     * ```php
+     * if (ValidadorEc::isValid('0926687856')) {
+     *     echo 'Valid document';
+     * }
+     * ```
+     */
+    public static function isValid(string $number): bool
+    {
+        return (new self())->validate($number);
+    }
+
+    /**
+     * Quick cedula validation without instantiation.
+     */
+    public static function isValidCedula(string $number): bool
+    {
+        return (new self())->validateCedula($number);
+    }
+
+    /**
+     * Quick natural person RUC validation without instantiation.
+     */
+    public static function isValidNaturalPersonRuc(string $number): bool
+    {
+        return (new self())->validateNaturalPersonRuc($number);
+    }
+
+    /**
+     * Quick private company RUC validation without instantiation.
+     */
+    public static function isValidPrivateCompanyRuc(string $number): bool
+    {
+        return (new self())->validatePrivateCompanyRuc($number);
+    }
+
+    /**
+     * Quick public company RUC validation without instantiation.
+     */
+    public static function isValidPublicCompanyRuc(string $number): bool
+    {
+        return (new self())->validatePublicCompanyRuc($number);
+    }
+
+    // ==================== Instance Methods ====================
 
     /**
      * Auto-detect and validate any Ecuadorian identification document.
@@ -118,7 +177,52 @@ final class ValidadorEc
     }
 
     /**
+     * Extract Cedula from a Natural Person RUC.
+     *
+     * Natural Person RUC = Cedula (10 digits) + Establishment Code (3 digits)
+     *
+     * @param string $ruc The RUC number (13 digits)
+     * @return string|null The cedula (10 digits) or null if invalid
+     *
+     * @example
+     * ```php
+     * $validator = new ValidadorEc();
+     * $cedula = $validator->extractCedulaFromRuc('0926687856001'); // '0926687856'
+     * ```
+     */
+    public function extractCedulaFromRuc(string $ruc): ?string
+    {
+        $ruc = trim($ruc);
+
+        if (strlen($ruc) !== 13) {
+            return null;
+        }
+
+        if (!ctype_digit($ruc)) {
+            return null;
+        }
+
+        $thirdDigit = (int) $ruc[2];
+
+        // Only natural person RUC (third digit 0-5) contains a cedula
+        if ($thirdDigit < 0 || $thirdDigit > 5) {
+            return null;
+        }
+
+        $cedula = substr($ruc, 0, 10);
+
+        // Validate the extracted cedula
+        if (!$this->validateCedula($cedula)) {
+            return null;
+        }
+
+        return $cedula;
+    }
+
+    /**
      * Get the document type detected in the last validation.
+     *
+     * @return string One of TYPE_CEDULA, TYPE_RUC_NATURAL, TYPE_RUC_PRIVATE, TYPE_RUC_PUBLIC, or empty string
      */
     public function getDocumentType(): string
     {
@@ -224,7 +328,7 @@ final class ValidadorEc
 
     private function isValidFormat(string $number): bool
     {
-        if (empty($number)) {
+        if ($number === '') {
             $this->error = 'Value cannot be empty';
 
             return false;
@@ -268,7 +372,7 @@ final class ValidadorEc
 
     private function assertValidInitialFormat(string $number, int $requiredLength): void
     {
-        if (empty($number)) {
+        if ($number === '') {
             throw new InvalidArgumentException('Value cannot be empty');
         }
 
@@ -297,16 +401,16 @@ final class ValidadorEc
         $isValid = match ($type) {
             self::TYPE_CEDULA, self::TYPE_RUC_NATURAL => $digit >= 0 && $digit <= 5,
             self::TYPE_RUC_PRIVATE => $digit === 9,
-            self::TYPE_RUC_PUBLIC  => $digit === 6,
-            default                => throw new InvalidArgumentException('Invalid identification type'),
+            self::TYPE_RUC_PUBLIC => $digit === 6,
+            default => throw new InvalidArgumentException('Invalid identification type'),
         };
 
         if (!$isValid) {
             $message = match ($type) {
                 self::TYPE_CEDULA, self::TYPE_RUC_NATURAL => 'Third digit must be between 0 and 5 for cedula and natural person RUC',
                 self::TYPE_RUC_PRIVATE => 'Third digit must be 9 for private companies',
-                self::TYPE_RUC_PUBLIC  => 'Third digit must be 6 for public companies',
-                default                => 'Invalid identification type',
+                self::TYPE_RUC_PUBLIC => 'Third digit must be 6 for public companies',
+                default => 'Invalid identification type',
             };
 
             throw new InvalidArgumentException($message);
@@ -322,6 +426,8 @@ final class ValidadorEc
 
     /**
      * Modulo 10 algorithm for Cedula and Natural Person RUC.
+     *
+     * @param list<int> $coefficients
      */
     private function assertValidModulo10(string $initialDigits, int $checkDigit): void
     {
@@ -343,6 +449,8 @@ final class ValidadorEc
 
     /**
      * Modulo 11 algorithm for Private and Public Company RUC.
+     *
+     * @param list<int> $coefficients
      */
     private function assertValidModulo11(string $initialDigits, int $checkDigit, array $coefficients): void
     {

@@ -39,6 +39,23 @@ use Tavo\ValidadorEc;
 $validator = new ValidadorEc();
 ```
 
+### Quick Validation (Static Methods)
+
+For simple validation without creating an instance:
+
+```php
+// Validate any document type
+if (ValidadorEc::isValid('0926687856')) {
+    echo 'Valid document';
+}
+
+// Validate specific document types
+ValidadorEc::isValidCedula('0926687856');              // true
+ValidadorEc::isValidNaturalPersonRuc('0926687856001'); // true
+ValidadorEc::isValidPrivateCompanyRuc('0992397535001'); // true
+ValidadorEc::isValidPublicCompanyRuc('1760001550001'); // true
+```
+
 ### Universal Validation (Auto-detect document type)
 
 The `validate()` method automatically detects and validates any document type:
@@ -93,6 +110,23 @@ if ($validator->validatePublicCompanyRuc('1760001550001')) {
 }
 ```
 
+### Extract Cedula from RUC
+
+For Natural Person RUC, you can extract the cedula portion:
+
+```php
+$cedula = $validator->extractCedulaFromRuc('0926687856001');
+// Returns: '0926687856'
+
+// Returns null for Private/Public Company RUC (no cedula)
+$result = $validator->extractCedulaFromRuc('0992397535001');
+// Returns: null
+
+// Returns null for invalid RUC
+$result = $validator->extractCedulaFromRuc('invalid');
+// Returns: null
+```
+
 ### Available Constants
 
 ```php
@@ -104,7 +138,17 @@ ValidadorEc::TYPE_RUC_PUBLIC   // 'ruc_public'
 
 ## API Reference
 
-### Methods
+### Static Methods
+
+| Method | Description |
+|--------|-------------|
+| `ValidadorEc::isValid(string $number)` | Quick validation of any document type |
+| `ValidadorEc::isValidCedula(string $number)` | Quick cedula validation |
+| `ValidadorEc::isValidNaturalPersonRuc(string $number)` | Quick natural person RUC validation |
+| `ValidadorEc::isValidPrivateCompanyRuc(string $number)` | Quick private company RUC validation |
+| `ValidadorEc::isValidPublicCompanyRuc(string $number)` | Quick public company RUC validation |
+
+### Instance Methods
 
 | Method | Description |
 |--------|-------------|
@@ -113,6 +157,7 @@ ValidadorEc::TYPE_RUC_PUBLIC   // 'ruc_public'
 | `validateNaturalPersonRuc(string $number)` | Validate Natural Person RUC (13 digits) |
 | `validatePrivateCompanyRuc(string $number)` | Validate Private Company RUC (13 digits) |
 | `validatePublicCompanyRuc(string $number)` | Validate Public Company RUC (13 digits) |
+| `extractCedulaFromRuc(string $ruc)` | Extract cedula from natural person RUC |
 | `getDocumentType()` | Get detected document type after validation |
 | `getError()` | Get error message from last validation |
 
@@ -193,10 +238,12 @@ This library uses algorithmic validation (Modulo 10/11). Known limitations:
 - **Breaking**: Removed all Spanish method names
 - New universal `validate()` method with auto-detection
 - New `getDocumentType()` method
+- New static methods for quick validation (`isValid()`, `isValidCedula()`, etc.)
+- New `extractCedulaFromRuc()` method to extract cedula from natural person RUC
 - Support for province code 30 (foreign residents)
 - Class is now `final`
 - Optimized with `match` expressions
-- 77 comprehensive tests
+- 93 comprehensive tests
 
 ### v1.0.2
 - Fixed namespace issues
