@@ -48,6 +48,7 @@ final class ValidadorEc
      * Quick validation without instantiation.
      *
      * @param string $number Document number to validate
+     *
      * @return bool True if valid, false otherwise
      *
      * @example
@@ -182,6 +183,7 @@ final class ValidadorEc
      * Natural Person RUC = Cedula (10 digits) + Establishment Code (3 digits)
      *
      * @param string $ruc The RUC number (13 digits)
+     *
      * @return string|null The cedula (10 digits) or null if invalid
      *
      * @example
@@ -401,16 +403,16 @@ final class ValidadorEc
         $isValid = match ($type) {
             self::TYPE_CEDULA, self::TYPE_RUC_NATURAL => $digit >= 0 && $digit <= 5,
             self::TYPE_RUC_PRIVATE => $digit === 9,
-            self::TYPE_RUC_PUBLIC => $digit === 6,
-            default => throw new InvalidArgumentException('Invalid identification type'),
+            self::TYPE_RUC_PUBLIC  => $digit === 6,
+            default                => throw new InvalidArgumentException('Invalid identification type'),
         };
 
         if (!$isValid) {
             $message = match ($type) {
                 self::TYPE_CEDULA, self::TYPE_RUC_NATURAL => 'Third digit must be between 0 and 5 for cedula and natural person RUC',
                 self::TYPE_RUC_PRIVATE => 'Third digit must be 9 for private companies',
-                self::TYPE_RUC_PUBLIC => 'Third digit must be 6 for public companies',
-                default => 'Invalid identification type',
+                self::TYPE_RUC_PUBLIC  => 'Third digit must be 6 for public companies',
+                default                => 'Invalid identification type',
             };
 
             throw new InvalidArgumentException($message);
