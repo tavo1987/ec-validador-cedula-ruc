@@ -9,17 +9,11 @@ use Tavo\ValidadorEc;
 
 class TestCase extends BaseTestCase
 {
-    /**
-     * Validador instance available for all test methods.
-     */
-    protected ValidadorEc $validador;
+    protected ValidadorEc $validator;
 
-    /**
-     * Set up the ValidadorEc instance before each test.
-     */
     protected function setUp(): void
     {
         parent::setUp();
-        $this->validador = new ValidadorEc();
+        $this->validator = new ValidadorEc();
     }
 }

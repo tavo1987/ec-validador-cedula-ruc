@@ -9,18 +9,12 @@
 <a href="https://packagist.org/packages/tavo1987/ec-validador-cedula-ruc"><img src="https://poser.pugx.org/tavo1987/ec-validador-cedula-ruc/v/stable" alt="Latest Stable Version"></a>
 </p>
 
-This package provides an easy way to validate Ecuadorian identification documents:
+A PHP library for validating Ecuadorian identification documents:
 
 - **Cedula** (National ID - 10 digits)
 - **RUC for Natural Persons** (13 digits, third digit 0-5)
 - **RUC for Private Companies** (13 digits, third digit 9)
 - **RUC for Public Companies** (13 digits, third digit 6)
-
-## Introduction
-
-This package is based on the repository [validacion-cedula-ruc-ecuador](https://github.com/diaspar/validacion-cedula-ruc-ecuador) created by [diaspar](https://github.com/diaspar), modified to be easily installable and usable in any PHP project via Composer.
-
-For more information about the validation logic, visit this article: [How to validate Cedula and RUC in Ecuador](https://medium.com/@bryansuarez/c%C3%B3mo-validar-c%C3%A9dula-y-ruc-en-ecuador-b62c5666186f) (Spanish).
 
 ## Requirements
 
@@ -36,15 +30,9 @@ composer require tavo1987/ec-validador-cedula-ruc
 
 ### Basic Setup
 
-First, make sure to require Composer's autoload file:
-
 ```php
 require 'vendor/autoload.php';
-```
 
-Then instantiate the class and call the appropriate validation method:
-
-```php
 use Tavo\ValidadorEc;
 
 $validator = new ValidadorEc();
@@ -52,28 +40,27 @@ $validator = new ValidadorEc();
 
 ### Universal Validation (Auto-detect document type)
 
-The `validar()` method automatically detects and validates any document type:
+The `validate()` method automatically detects and validates any document type:
 
 ```php
-// Auto-detect and validate any document
-if ($validator->validar('0926687856')) {
-    echo 'Valid document: ' . $validator->getTipoDocumento();
-    // Output: Valid document: cedula
+// Cedula (10 digits)
+if ($validator->validate('0926687856')) {
+    echo 'Valid: ' . $validator->getDocumentType(); // "cedula"
 }
 
-if ($validator->validar('0926687856001')) {
-    echo 'Valid document: ' . $validator->getTipoDocumento();
-    // Output: Valid document: ruc_natural
+// Natural Person RUC (13 digits, third digit 0-5)
+if ($validator->validate('0926687856001')) {
+    echo 'Valid: ' . $validator->getDocumentType(); // "ruc_natural"
 }
 
-if ($validator->validar('1760001550001')) {
-    echo 'Valid document: ' . $validator->getTipoDocumento();
-    // Output: Valid document: ruc_publica
+// Public Company RUC (13 digits, third digit 6)
+if ($validator->validate('1760001550001')) {
+    echo 'Valid: ' . $validator->getDocumentType(); // "ruc_public"
 }
 
-if ($validator->validar('0992397535001')) {
-    echo 'Valid document: ' . $validator->getTipoDocumento();
-    // Output: Valid document: ruc_privada
+// Private Company RUC (13 digits, third digit 9)
+if ($validator->validate('0992397535001')) {
+    echo 'Valid: ' . $validator->getDocumentType(); // "ruc_private"
 }
 ```
 
@@ -82,43 +69,64 @@ if ($validator->validar('0992397535001')) {
 If you know the document type beforehand:
 
 ```php
-// Validate Cedula (National ID)
-if ($validator->validarCedula('0926687856')) {
+// Validate Cedula
+if ($validator->validateCedula('0926687856')) {
     echo 'Valid Cedula';
 } else {
-    echo 'Invalid Cedula: ' . $validator->getError();
+    echo 'Error: ' . $validator->getError();
 }
 
-// Validate RUC for Natural Person
-if ($validator->validarRucPersonaNatural('0926687856001')) {
+// Validate Natural Person RUC
+if ($validator->validateNaturalPersonRuc('0926687856001')) {
     echo 'Valid RUC';
-} else {
-    echo 'Invalid RUC: ' . $validator->getError();
 }
 
-// Validate RUC for Private Company
-if ($validator->validarRucSociedadPrivada('0992397535001')) {
+// Validate Private Company RUC
+if ($validator->validatePrivateCompanyRuc('0992397535001')) {
     echo 'Valid RUC';
-} else {
-    echo 'Invalid RUC: ' . $validator->getError();
 }
 
-// Validate RUC for Public Company
-if ($validator->validarRucSociedadPublica('1760001550001')) {
+// Validate Public Company RUC
+if ($validator->validatePublicCompanyRuc('1760001550001')) {
     echo 'Valid RUC';
-} else {
-    echo 'Invalid RUC: ' . $validator->getError();
 }
 ```
 
 ### Available Constants
 
 ```php
-ValidadorEc::TIPO_CEDULA       // 'cedula'
-ValidadorEc::TIPO_RUC_NATURAL  // 'ruc_natural'
-ValidadorEc::TIPO_RUC_PRIVADA  // 'ruc_privada'
-ValidadorEc::TIPO_RUC_PUBLICA  // 'ruc_publica'
+ValidadorEc::TYPE_CEDULA       // 'cedula'
+ValidadorEc::TYPE_RUC_NATURAL  // 'ruc_natural'
+ValidadorEc::TYPE_RUC_PRIVATE  // 'ruc_private'
+ValidadorEc::TYPE_RUC_PUBLIC   // 'ruc_public'
 ```
+
+## API Reference
+
+### Methods
+
+| Method | Description |
+|--------|-------------|
+| `validate(string $number)` | Auto-detect and validate any document |
+| `validateCedula(string $number)` | Validate Cedula (10 digits) |
+| `validateNaturalPersonRuc(string $number)` | Validate Natural Person RUC (13 digits) |
+| `validatePrivateCompanyRuc(string $number)` | Validate Private Company RUC (13 digits) |
+| `validatePublicCompanyRuc(string $number)` | Validate Public Company RUC (13 digits) |
+| `getDocumentType()` | Get detected document type after validation |
+| `getError()` | Get error message from last validation |
+
+### Legacy Methods (Deprecated)
+
+For backwards compatibility, Spanish method names are still available:
+
+| Legacy Method | Use Instead |
+|--------------|-------------|
+| `validar()` | `validate()` |
+| `validarCedula()` | `validateCedula()` |
+| `validarRucPersonaNatural()` | `validateNaturalPersonRuc()` |
+| `validarRucSociedadPrivada()` | `validatePrivateCompanyRuc()` |
+| `validarRucSociedadPublica()` | `validatePublicCompanyRuc()` |
+| `getTipoDocumento()` | `getDocumentType()` |
 
 ## Document Structure
 
@@ -133,13 +141,13 @@ ValidadorEc::TIPO_RUC_PUBLICA  // 'ruc_publica'
 
 ### Province Codes
 
-The first two digits represent the province where the document was issued:
+The first two digits represent the province:
 
 | Code | Province |
 |------|----------|
 | 01 | Azuay |
 | 02 | Bolivar |
-| 03 | Canar |
+| 03 | Cañar |
 | 04 | Carchi |
 | 05 | Cotopaxi |
 | 06 | Chimborazo |
@@ -161,28 +169,24 @@ The first two digits represent the province where the document was issued:
 | 22 | Orellana |
 | 23 | Santo Domingo de los Tsachilas |
 | 24 | Santa Elena |
-| **30** | **Ecuadorians abroad / Foreign residents** |
+| **30** | **Foreign residents** |
 
 ### Foreign Residents (Code 30)
 
-Province code 30 is reserved for "ecuatorianos registrados en el exterior" (Ecuadorians registered abroad) and foreign residents. For documents with this code:
+Province code 30 is for "ecuatorianos registrados en el exterior" (Ecuadorians abroad) and foreign residents:
 
-- The third digit validation is skipped, as different rules may apply
-- The check digit (Modulo 10) validation is still performed
+- Third digit validation is skipped
+- Check digit (Modulo 10) validation is still performed
 
 ## Validation Limitations
 
-This library uses algorithmic validation based on Modulo 10 and Modulo 11 algorithms. However, there are some known limitations:
+This library uses algorithmic validation (Modulo 10/11). Known limitations:
 
-1. **RUC for foreign natural persons without cedula**: According to Ecuador's SRI (Tax Authority), RUCs issued to foreign natural persons without an Ecuadorian cedula may not follow the standard algorithmic validation. The SRI recommends verifying such RUCs through their official web services.
+1. **Foreign natural persons without cedula**: RUCs for foreigners may not follow standard validation. Verify through SRI web services.
 
-2. **Extended sequential numbers**: For some RUCs with sequential numbers exceeding 6 digits, the Modulo 11 validation may not apply.
+2. **Critical applications**: Consider complementing with official SRI database queries.
 
-3. **For critical applications**: Consider complementing this validation with a query to the official SRI database or web services.
-
-## Tests
-
-The package includes a comprehensive test suite using PHPUnit. Tests are located in the `tests/` directory.
+## Testing
 
 ```bash
 # Run all tests
@@ -192,32 +196,21 @@ The package includes a comprehensive test suite using PHPUnit. Tests are located
 ./vendor/bin/phpunit --coverage-text
 ```
 
-## Contributing
-
-If you find a bug or want to add new functionality, feel free to open an issue or submit a pull request. Please ensure:
-
-1. All tests pass (`./vendor/bin/phpunit`)
-2. New features include corresponding tests
-3. Code follows PSR-12 coding standards
-
 ## Changelog
 
 ### v2.0.0
 - **Breaking**: Minimum PHP version is now 8.1
-- Added `validar()` method for auto-detecting document type
-- Added `getTipoDocumento()` method to get the detected document type
-- Added support for province code 30 (Ecuadorians abroad / foreign residents)
-- For code 30 documents, third digit validation is skipped (PR #6)
-- Added PHP 8.x type hints and return types
-- Added `match` expression for modern PHP
-- Updated PHPUnit to version 10/11
-- Improved error messages and documentation
-- Added 79 comprehensive tests
-- Fixed various edge cases
+- **Breaking**: Constants renamed (`TIPO_*` → `TYPE_*`)
+- Added English method names (`validate()`, `validateCedula()`, etc.)
+- Added `getDocumentType()` method
+- Added support for province code 30 (foreign residents)
+- Legacy Spanish method names still work (deprecated)
+- Class is now `final`
+- Optimized with `match` expressions
+- 68 comprehensive tests
 
 ### v1.0.2
 - Fixed namespace issues
-- Added namespace prefix to test suite
 
 ### v1.0.0
 - Initial release
@@ -234,3 +227,9 @@ MIT License - see [LICENSE](LICENCE) file for details.
 
 **Bryan Suarez**
 - Twitter: [@BryanSC_7](https://twitter.com/BryanSC_7)
+
+## Credits
+
+Based on [validacion-cedula-ruc-ecuador](https://github.com/diaspar/validacion-cedula-ruc-ecuador) by [diaspar](https://github.com/diaspar).
+
+For validation logic details: [How to validate Cedula and RUC in Ecuador](https://medium.com/@bryansuarez/c%C3%B3mo-validar-c%C3%A9dula-y-ruc-en-ecuador-b62c5666186f) (Spanish).
