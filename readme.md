@@ -4,7 +4,7 @@
 
 <p align="center">
 <a href="https://github.com/tavo1987/ec-validador-cedula-ruc/actions/workflows/tests.yml"><img src="https://github.com/tavo1987/ec-validador-cedula-ruc/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
-<a href="https://packagist.org/packages/tavo1987/ec-validador-cedula-ruc"><img src="https://img.shields.io/badge/PHP-8.1+-blue.svg?style=flat-square" alt="PHP 8.1+"></a>
+<a href="https://packagist.org/packages/tavo1987/ec-validador-cedula-ruc"><img src="https://img.shields.io/badge/PHP-8.2+-blue.svg?style=flat-square" alt="PHP 8.2+"></a>
 <a href="https://packagist.org/packages/tavo1987/ec-validador-cedula-ruc"><img src="https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square" alt="License"></a>
 <a href="https://packagist.org/packages/tavo1987/ec-validador-cedula-ruc"><img src="https://poser.pugx.org/tavo1987/ec-validador-cedula-ruc/downloads" alt="Total Downloads"></a>
 <a href="https://packagist.org/packages/tavo1987/ec-validador-cedula-ruc"><img src="https://poser.pugx.org/tavo1987/ec-validador-cedula-ruc/v/stable" alt="Latest Stable Version"></a>
@@ -19,7 +19,7 @@ A PHP library for validating Ecuadorian identification documents:
 
 ## Requirements
 
-- PHP 8.1 or higher
+- PHP 8.2 or higher
 
 ## Installation
 
@@ -232,7 +232,7 @@ This library uses algorithmic validation (Modulo 10/11). Known limitations:
 ## Changelog
 
 ### v2.0.0
-- **Breaking**: Minimum PHP version is now 8.1
+- **Breaking**: Minimum PHP version is now 8.2
 - **Breaking**: All method names now in English
 - **Breaking**: Constants renamed (`TIPO_*` → `TYPE_*`)
 - **Breaking**: Removed all Spanish method names
