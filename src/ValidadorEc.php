@@ -8,7 +8,7 @@ use Exception;
 use InvalidArgumentException;
 
 /**
- * ValidadorEc - Ecuador ID and RUC Validator
+ * ValidadorEc - Ecuador ID and RUC Validator.
  *
  * Contains methods to validate Ecuadorian identification documents:
  * - Cedula (National ID)
@@ -26,7 +26,7 @@ use InvalidArgumentException;
 class ValidadorEc
 {
     /**
-     * Document type constants
+     * Document type constants.
      */
     public const TIPO_CEDULA = 'cedula';
     public const TIPO_RUC_NATURAL = 'ruc_natural';
@@ -34,12 +34,12 @@ class ValidadorEc
     public const TIPO_RUC_PUBLICA = 'ruc_publica';
 
     /**
-     * Error message from the last validation
+     * Error message from the last validation.
      */
     protected string $error = '';
 
     /**
-     * Detected document type from the last validation
+     * Detected document type from the last validation.
      */
     protected string $tipoDocumento = '';
 
@@ -54,6 +54,7 @@ class ValidadorEc
      *   - 9: Private Company RUC
      *
      * @param string $numero Document number to validate
+     *
      * @return bool True if valid, false otherwise
      */
     public function validar(string $numero = ''): bool
@@ -65,11 +66,13 @@ class ValidadorEc
 
         if (empty($numero)) {
             $this->setError('Value cannot be empty');
+
             return false;
         }
 
         if (!ctype_digit($numero)) {
             $this->setError('Value can only contain digits');
+
             return false;
         }
 
@@ -78,6 +81,7 @@ class ValidadorEc
         // Cedula: 10 digits
         if ($length === 10) {
             $this->tipoDocumento = self::TIPO_CEDULA;
+
             return $this->validarCedula($numero);
         }
 
@@ -88,26 +92,31 @@ class ValidadorEc
             // Natural Person RUC (third digit 0-5)
             if ($tercerDigito >= 0 && $tercerDigito <= 5) {
                 $this->tipoDocumento = self::TIPO_RUC_NATURAL;
+
                 return $this->validarRucPersonaNatural($numero);
             }
 
             // Public Company RUC (third digit 6)
             if ($tercerDigito === 6) {
                 $this->tipoDocumento = self::TIPO_RUC_PUBLICA;
+
                 return $this->validarRucSociedadPublica($numero);
             }
 
             // Private Company RUC (third digit 9)
             if ($tercerDigito === 9) {
                 $this->tipoDocumento = self::TIPO_RUC_PRIVADA;
+
                 return $this->validarRucSociedadPrivada($numero);
             }
 
             $this->setError('Invalid third digit for RUC. Must be 0-5 (natural), 6 (public), or 9 (private)');
+
             return false;
         }
 
         $this->setError('Invalid document length. Cedula must have 10 digits, RUC must have 13 digits');
+
         return false;
     }
 
@@ -128,6 +137,7 @@ class ValidadorEc
      * the third digit validation is skipped as different rules may apply.
      *
      * @param string $numero Cedula number (10 digits)
+     *
      * @return bool True if valid, false otherwise
      */
     public function validarCedula(string $numero = ''): bool
@@ -149,6 +159,7 @@ class ValidadorEc
             $this->algoritmoModulo10(substr($numero, 0, 9), $numero[9]);
         } catch (Exception $e) {
             $this->setError($e->getMessage());
+
             return false;
         }
 
@@ -162,6 +173,7 @@ class ValidadorEc
      * the third digit validation is skipped as different rules may apply.
      *
      * @param string $numero RUC number (13 digits)
+     *
      * @return bool True if valid, false otherwise
      */
     public function validarRucPersonaNatural(string $numero = ''): bool
@@ -183,6 +195,7 @@ class ValidadorEc
             $this->algoritmoModulo10(substr($numero, 0, 9), $numero[9]);
         } catch (Exception $e) {
             $this->setError($e->getMessage());
+
             return false;
         }
 
@@ -193,6 +206,7 @@ class ValidadorEc
      * Validate RUC for Private Company.
      *
      * @param string $numero RUC number (13 digits)
+     *
      * @return bool True if valid, false otherwise
      */
     public function validarRucSociedadPrivada(string $numero = ''): bool
@@ -208,6 +222,7 @@ class ValidadorEc
             $this->algoritmoModulo11(substr($numero, 0, 9), $numero[9], self::TIPO_RUC_PRIVADA);
         } catch (Exception $e) {
             $this->setError($e->getMessage());
+
             return false;
         }
 
@@ -218,6 +233,7 @@ class ValidadorEc
      * Validate RUC for Public Company.
      *
      * @param string $numero RUC number (13 digits)
+     *
      * @return bool True if valid, false otherwise
      */
     public function validarRucSociedadPublica(string $numero = ''): bool
@@ -233,6 +249,7 @@ class ValidadorEc
             $this->algoritmoModulo11(substr($numero, 0, 8), $numero[8], self::TIPO_RUC_PUBLICA);
         } catch (Exception $e) {
             $this->setError($e->getMessage());
+
             return false;
         }
 
@@ -242,9 +259,11 @@ class ValidadorEc
     /**
      * Initial validations for Cedula and RUC.
      *
-     * @param string $numero Document number
-     * @param int $caracteres Required character count
+     * @param string $numero     Document number
+     * @param int    $caracteres Required character count
+     *
      * @throws InvalidArgumentException When validation fails
+     *
      * @return bool True if valid
      */
     protected function validarInicial(string $numero, int $caracteres): bool
@@ -272,7 +291,9 @@ class ValidadorEc
      * - 30: Foreign residents
      *
      * @param string $numero First two digits
+     *
      * @throws InvalidArgumentException When province code is invalid
+     *
      * @return bool True if valid
      */
     protected function validarCodigoProvincia(string $numero): bool
@@ -299,8 +320,10 @@ class ValidadorEc
      * - Public Company RUC: 6
      *
      * @param string $numero Third digit
-     * @param string $tipo Document type
+     * @param string $tipo   Document type
+     *
      * @throws InvalidArgumentException When third digit is invalid
+     *
      * @return bool True if valid
      */
     protected function validarTercerDigito(string $numero, string $tipo): bool
@@ -346,7 +369,9 @@ class ValidadorEc
      * The establishment code cannot be 0 (must be 001 or higher).
      *
      * @param string $numero Establishment code digits
+     *
      * @throws InvalidArgumentException When code is 0
+     *
      * @return bool True if valid
      */
     protected function validarCodigoEstablecimiento(string $numero): bool
@@ -370,9 +395,11 @@ class ValidadorEc
      * 4. Calculate: result = (sum % 10 == 0) ? 0 : 10 - (sum % 10)
      * 5. Result must equal the verification digit
      *
-     * @param string $digitosIniciales First 9 digits
+     * @param string $digitosIniciales  First 9 digits
      * @param string $digitoVerificador 10th digit (verification digit)
+     *
      * @throws InvalidArgumentException When verification fails
+     *
      * @return bool True if valid
      */
     protected function algoritmoModulo10(string $digitosIniciales, string $digitoVerificador): bool
@@ -414,10 +441,12 @@ class ValidadorEc
      * 3. Calculate: result = (sum % 11 == 0) ? 0 : 11 - (sum % 11)
      * 4. Result must equal the verification digit
      *
-     * @param string $digitosIniciales Initial digits (9 for private, 8 for public)
+     * @param string $digitosIniciales  Initial digits (9 for private, 8 for public)
      * @param string $digitoVerificador Verification digit
-     * @param string $tipo Document type (ruc_privada or ruc_publica)
+     * @param string $tipo              Document type (ruc_privada or ruc_publica)
+     *
      * @throws InvalidArgumentException When verification fails
+     *
      * @return bool True if valid
      */
     protected function algoritmoModulo11(string $digitosIniciales, string $digitoVerificador, string $tipo): bool
@@ -425,7 +454,7 @@ class ValidadorEc
         $coeficientes = match ($tipo) {
             self::TIPO_RUC_PRIVADA => [4, 3, 2, 7, 6, 5, 4, 3, 2],
             self::TIPO_RUC_PUBLICA => [3, 2, 7, 6, 5, 4, 3, 2],
-            default => throw new InvalidArgumentException('Invalid identification type'),
+            default                => throw new InvalidArgumentException('Invalid identification type'),
         };
 
         $digitoVerificador = (int) $digitoVerificador;
@@ -460,11 +489,13 @@ class ValidadorEc
      * Set the error message.
      *
      * @param string $newError Error message
+     *
      * @return self
      */
     public function setError(string $newError): self
     {
         $this->error = $newError;
+
         return $this;
     }
 }

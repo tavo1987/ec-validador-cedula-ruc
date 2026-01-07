@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Tavo\Tests;
 
-use Tavo\ValidadorEc;
-
 class ValidadorRucSociedadPublicaTest extends TestCase
 {
     public function test_mostrar_error_cuando_campo_ruc_este_vacio_o_sea_nulo_en_sociedad_publica(): void
@@ -99,7 +97,7 @@ class ValidadorRucSociedadPublicaTest extends TestCase
     // ==================== NEW TEST CASES ====================
 
     /**
-     * Issue #3 - RUC that was reported as not passing validation
+     * Issue #3 - RUC that was reported as not passing validation.
      *
      * RUC: 0962893970001
      * Analysis:
@@ -135,7 +133,7 @@ class ValidadorRucSociedadPublicaTest extends TestCase
 
     /**
      * Test with a VALID public company RUC from Guayas (09)
-     * This demonstrates correct validation for public RUCs
+     * This demonstrates correct validation for public RUCs.
      */
     public function test_ruc_sociedad_publica_guayas_valido(): void
     {

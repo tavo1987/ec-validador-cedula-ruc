@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Tavo\Tests;
 
-use Tavo\ValidadorEc;
-
 class ValidadorRucSociedadPrivadaTest extends TestCase
 {
     public function test_validacion_falla_cuando_parametro_esta_vacio_o_es_nulo(): void
