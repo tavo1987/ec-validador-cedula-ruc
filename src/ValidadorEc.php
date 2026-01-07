@@ -1,444 +1,473 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tavo;
 
-use Exception;
+use InvalidArgumentException;
 
 /**
- * ValidadorEc contiene metodos para validar cédula, RUC de persona natural, RUC de sociedad privada y
- * RUC de socieda pública en el Ecuador.
+ * Ecuador ID and RUC Validator.
  *
- * Los métodos públicos para realizar validaciones son:
+ * Validates Ecuadorian identification documents:
+ * - Cedula (National ID - 10 digits)
+ * - RUC for Natural Persons (13 digits, third digit 0-5)
+ * - RUC for Private Companies (13 digits, third digit 9)
+ * - RUC for Public Companies (13 digits, third digit 6)
  *
- * validarCedula()
- * validarRucPersonaNatural()
- * validarRucSociedadPrivada()
+ * @author Edwin Ramirez
+ * @author Bryan Suarez
  */
-class ValidadorEc
+final class ValidadorEc
 {
-    /**
-     * Error.
-     *
-     * Contiene errores globales de la clase
-     *
-     * @var string
-     */
-    protected $error = '';
+    // Document type constants
+    public const TYPE_CEDULA = 'cedula';
+    public const TYPE_RUC_NATURAL = 'ruc_natural';
+    public const TYPE_RUC_PRIVATE = 'ruc_private';
+    public const TYPE_RUC_PUBLIC = 'ruc_public';
+
+    // Province code for foreign residents
+    private const FOREIGN_RESIDENT_CODE = 30;
+
+    // Validation algorithms coefficients
+    /** @var list<int> */
+    private const MODULO_10_COEFFICIENTS = [2, 1, 2, 1, 2, 1, 2, 1, 2];
+
+    /** @var list<int> */
+    private const MODULO_11_PRIVATE_COEFFICIENTS = [4, 3, 2, 7, 6, 5, 4, 3, 2];
+
+    /** @var list<int> */
+    private const MODULO_11_PUBLIC_COEFFICIENTS = [3, 2, 7, 6, 5, 4, 3, 2];
+
+    private string $error = '';
+    private string $documentType = '';
+
+    // ==================== Static Methods ====================
 
     /**
-     * Validar cédula.
+     * Quick validation without instantiation.
      *
-     * @param string $numero Número de cédula
+     * @param string $number Document number to validate
      *
-     * @return bool
+     * @return bool True if valid, false otherwise
+     *
+     * @example
+     * ```php
+     * if (ValidadorEc::isValid('0926687856')) {
+     *     echo 'Valid document';
+     * }
+     * ```
      */
-    public function validarCedula($numero = '')
+    public static function isValid(string $number): bool
     {
-        // fuerzo parametro de entrada a string
-        $numero = (string) $numero;
+        return (new self())->validate($number);
+    }
 
-        // borro por si acaso errores de llamadas anteriores.
-        $this->setError('');
+    /**
+     * Quick cedula validation without instantiation.
+     */
+    public static function isValidCedula(string $number): bool
+    {
+        return (new self())->validateCedula($number);
+    }
 
-        // validaciones
-        try {
-            $this->validarInicial($numero, '10');
-            $this->validarCodigoProvincia(substr($numero, 0, 2));
-            $this->validarTercerDigito($numero[2], 'cedula');
-            $this->algoritmoModulo10(substr($numero, 0, 9), $numero[9]);
-        } catch (Exception $e) {
-            $this->setError($e->getMessage());
+    /**
+     * Quick natural person RUC validation without instantiation.
+     */
+    public static function isValidNaturalPersonRuc(string $number): bool
+    {
+        return (new self())->validateNaturalPersonRuc($number);
+    }
 
+    /**
+     * Quick private company RUC validation without instantiation.
+     */
+    public static function isValidPrivateCompanyRuc(string $number): bool
+    {
+        return (new self())->validatePrivateCompanyRuc($number);
+    }
+
+    /**
+     * Quick public company RUC validation without instantiation.
+     */
+    public static function isValidPublicCompanyRuc(string $number): bool
+    {
+        return (new self())->validatePublicCompanyRuc($number);
+    }
+
+    // ==================== Instance Methods ====================
+
+    /**
+     * Auto-detect and validate any Ecuadorian identification document.
+     *
+     * Determines document type based on:
+     * - 10 digits: Cedula
+     * - 13 digits with third digit 0-5: Natural Person RUC
+     * - 13 digits with third digit 6: Public Company RUC
+     * - 13 digits with third digit 9: Private Company RUC
+     */
+    public function validate(string $number = ''): bool
+    {
+        $this->error = '';
+        $this->documentType = '';
+        $number = trim($number);
+
+        if (!$this->isValidFormat($number)) {
             return false;
         }
 
-        return true;
+        $length = strlen($number);
+
+        if ($length === 10) {
+            $this->documentType = self::TYPE_CEDULA;
+
+            return $this->performCedulaValidation($number);
+        }
+
+        if ($length === 13) {
+            return $this->detectAndValidateRuc($number);
+        }
+
+        $this->error = 'Invalid document length. Cedula must have 10 digits, RUC must have 13 digits';
+
+        return false;
     }
 
     /**
-     * Validar RUC persona natural.
-     *
-     * @param string $numero Número de RUC persona natural
-     *
-     * @return bool
+     * Validate Ecuadorian Cedula (National ID).
      */
-    public function validarRucPersonaNatural($numero = '')
+    public function validateCedula(string $number = ''): bool
     {
-        // fuerzo parametro de entrada a string
-        $numero = (string) $numero;
+        $this->error = '';
+        $this->documentType = '';
 
-        // borro por si acaso errores de llamadas anteriores.
-        $this->setError('');
-
-        // validaciones
-        try {
-            $this->validarInicial($numero, '13');
-            $this->validarCodigoProvincia(substr($numero, 0, 2));
-            $this->validarTercerDigito($numero[2], 'ruc_natural');
-            $this->validarCodigoEstablecimiento(substr($numero, 10, 3));
-            $this->algoritmoModulo10(substr($numero, 0, 9), $numero[9]);
-        } catch (Exception $e) {
-            $this->setError($e->getMessage());
-
-            return false;
-        }
-
-        return true;
+        return $this->performCedulaValidation($number);
     }
 
     /**
-     * Validar RUC sociedad privada.
-     *
-     * @param string $numero Número de RUC sociedad privada
-     *
-     * @return bool
+     * Validate RUC for Natural Person.
      */
-    public function validarRucSociedadPrivada($numero = '')
+    public function validateNaturalPersonRuc(string $number = ''): bool
     {
-        // fuerzo parametro de entrada a string
-        $numero = (string) $numero;
+        $this->error = '';
+        $this->documentType = '';
 
-        // borro por si acaso errores de llamadas anteriores.
-        $this->setError('');
-
-        // validaciones
-        try {
-            $this->validarInicial($numero, '13');
-            $this->validarCodigoProvincia(substr($numero, 0, 2));
-            $this->validarTercerDigito($numero[2], 'ruc_privada');
-            $this->validarCodigoEstablecimiento(substr($numero, 10, 3));
-            $this->algoritmoModulo11(substr($numero, 0, 9), $numero[9], 'ruc_privada');
-        } catch (Exception $e) {
-            $this->setError($e->getMessage());
-
-            return false;
-        }
-
-        return true;
+        return $this->performNaturalPersonRucValidation($number);
     }
 
     /**
-     * Validar RUC sociedad publica.
-     *
-     * @param string $numero Número de RUC sociedad publica
-     *
-     * @return bool
+     * Validate RUC for Private Company.
      */
-    public function validarRucSociedadPublica($numero = '')
+    public function validatePrivateCompanyRuc(string $number = ''): bool
     {
-        // fuerzo parametro de entrada a string
-        $numero = (string) $numero;
+        $this->error = '';
+        $this->documentType = '';
 
-        // borro por si acaso errores de llamadas anteriores.
-        $this->setError('');
-
-        // validaciones
-        try {
-            $this->validarInicial($numero, '13');
-            $this->validarCodigoProvincia(substr($numero, 0, 2));
-            $this->validarTercerDigito($numero[2], 'ruc_publica');
-            $this->validarCodigoEstablecimiento(substr($numero, 9, 4));
-            $this->algoritmoModulo11(substr($numero, 0, 8), $numero[8], 'ruc_publica');
-        } catch (Exception $e) {
-            $this->setError($e->getMessage());
-
-            return false;
-        }
-
-        return true;
+        return $this->performPrivateCompanyRucValidation($number);
     }
 
     /**
-     * Validaciones iniciales para CI y RUC.
-     *
-     * @param string $numero     CI o RUC
-     * @param int    $caracteres Cantidad de caracteres requeridos
-     *
-     * @throws exception Cuando valor esta vacio, cuando no es dígito y
-     *                   cuando no tiene cantidad requerida de caracteres
-     *
-     * @return bool
+     * Validate RUC for Public Company.
      */
-    protected function validarInicial($numero, $caracteres)
+    public function validatePublicCompanyRuc(string $number = ''): bool
     {
-        if (empty($numero)) {
-            throw new Exception('Valor no puede estar vacio');
-        }
+        $this->error = '';
+        $this->documentType = '';
 
-        if (!ctype_digit($numero)) {
-            throw new Exception('Valor ingresado solo puede tener dígitos');
-        }
-
-        if (strlen($numero) != $caracteres) {
-            throw new Exception('Valor ingresado debe tener '.$caracteres.' caracteres');
-        }
-
-        return true;
+        return $this->performPublicCompanyRucValidation($number);
     }
 
     /**
-     * Validación de código de provincia (dos primeros dígitos de CI/RUC).
+     * Extract Cedula from a Natural Person RUC.
      *
-     * @param string $numero Dos primeros dígitos de CI/RUC
+     * Natural Person RUC = Cedula (10 digits) + Establishment Code (3 digits)
      *
-     * @throws exception Cuando el código de provincia no esta entre 00 y 24
+     * @param string $ruc The RUC number (13 digits)
      *
-     * @return bool
+     * @return string|null The cedula (10 digits) or null if invalid
+     *
+     * @example
+     * ```php
+     * $validator = new ValidadorEc();
+     * $cedula = $validator->extractCedulaFromRuc('0926687856001'); // '0926687856'
+     * ```
      */
-    protected function validarCodigoProvincia($numero)
+    public function extractCedulaFromRuc(string $ruc): ?string
     {
-        if ($numero < 0 || $numero > 24) {
-            throw new Exception('Codigo de Provincia (dos primeros dígitos) no deben ser mayor a 24 ni menores a 0');
+        $ruc = trim($ruc);
+
+        if (strlen($ruc) !== 13) {
+            return null;
         }
 
-        return true;
+        if (!ctype_digit($ruc)) {
+            return null;
+        }
+
+        $thirdDigit = (int) $ruc[2];
+
+        // Only natural person RUC (third digit 0-5) contains a cedula
+        if ($thirdDigit < 0 || $thirdDigit > 5) {
+            return null;
+        }
+
+        $cedula = substr($ruc, 0, 10);
+
+        // Validate the extracted cedula
+        if (!$this->validateCedula($cedula)) {
+            return null;
+        }
+
+        return $cedula;
     }
 
     /**
-     * Validación de tercer dígito.
+     * Get the document type detected in the last validation.
      *
-     * Permite validad el tercer dígito del documento. Dependiendo
-     * del campo tipo (tipo de identificación) se realizan las validaciones.
-     * Los posibles valores del campo tipo son: cedula, ruc_natural, ruc_privada
-     *
-     * Para Cédulas y RUC de personas naturales el terder dígito debe
-     * estar entre 0 y 5 (0,1,2,3,4,5)
-     *
-     * Para RUC de sociedades privadas el terder dígito debe ser
-     * igual a 9.
-     *
-     * Para RUC de sociedades públicas el terder dígito debe ser
-     * igual a 6.
-     *
-     * @param string $numero tercer dígito de CI/RUC
-     * @param string $tipo   tipo de identificador
-     *
-     * @throws exception Cuando el tercer digito no es válido. El mensaje
-     *                   de error depende del tipo de Idenficiación.
-     *
-     * @return bool
+     * @return string One of TYPE_CEDULA, TYPE_RUC_NATURAL, TYPE_RUC_PRIVATE, TYPE_RUC_PUBLIC, or empty string
      */
-    protected function validarTercerDigito($numero, $tipo)
+    public function getDocumentType(): string
     {
-        switch ($tipo) {
-            case 'cedula':
-            case 'ruc_natural':
-                if ($numero < 0 || $numero > 5) {
-                    throw new Exception('Tercer dígito debe ser mayor o igual a 0 y menor a 6 para cédulas y RUC de persona natural');
-                }
-                break;
-            case 'ruc_privada':
-                if ($numero != 9) {
-                    throw new Exception('Tercer dígito debe ser igual a 9 para sociedades privadas');
-                }
-                break;
-
-            case 'ruc_publica':
-                if ($numero != 6) {
-                    throw new Exception('Tercer dígito debe ser igual a 6 para sociedades públicas');
-                }
-                break;
-            default:
-                throw new Exception('Tipo de Identificacion no existe.');
-                break;
-        }
-
-        return true;
+        return $this->documentType;
     }
 
     /**
-     * Validación de código de establecimiento.
-     *
-     * @param string $numero tercer dígito de CI/RUC
-     *
-     * @throws exception Cuando el establecimiento es menor a 1
-     *
-     * @return bool
+     * Get the error message from the last validation.
      */
-    protected function validarCodigoEstablecimiento($numero)
-    {
-        if ($numero < 1) {
-            throw new Exception('Código de establecimiento no puede ser 0');
-        }
-
-        return true;
-    }
-
-    /**
-     * Algoritmo Modulo10 para validar si CI y RUC de persona natural son válidos.
-     *
-     * Los coeficientes usados para verificar el décimo dígito de la cédula,
-     * mediante el algoritmo “Módulo 10” son:  2. 1. 2. 1. 2. 1. 2. 1. 2
-     *
-     * Paso 1: Multiplicar cada dígito de los digitosIniciales por su respectivo
-     * coeficiente.
-     *
-     *  Ejemplo
-     *  digitosIniciales posicion 1  x 2
-     *  digitosIniciales posicion 2  x 1
-     *  digitosIniciales posicion 3  x 2
-     *  digitosIniciales posicion 4  x 1
-     *  digitosIniciales posicion 5  x 2
-     *  digitosIniciales posicion 6  x 1
-     *  digitosIniciales posicion 7  x 2
-     *  digitosIniciales posicion 8  x 1
-     *  digitosIniciales posicion 9  x 2
-     *
-     * Paso 2: Sí alguno de los resultados de cada multiplicación es mayor a o igual a 10,
-     * se suma entre ambos dígitos de dicho resultado. Ex. 12->1+2->3
-     *
-     * Paso 3: Se suman los resultados y se obtiene total
-     *
-     * Paso 4: Divido total para 10, se guarda residuo. Se resta 10 menos el residuo.
-     * El valor obtenido debe concordar con el digitoVerificador
-     *
-     * Nota: Cuando el residuo es cero(0) el dígito verificador debe ser 0.
-     *
-     * @param string $digitosIniciales  Nueve primeros dígitos de CI/RUC
-     * @param string $digitoVerificador Décimo dígito de CI/RUC
-     *
-     * @throws exception Cuando los digitosIniciales no concuerdan contra
-     *                   el código verificador.
-     *
-     * @return bool
-     */
-    protected function algoritmoModulo10($digitosIniciales, $digitoVerificador)
-    {
-        $arrayCoeficientes = [2, 1, 2, 1, 2, 1, 2, 1, 2];
-
-        $digitoVerificador = (int) $digitoVerificador;
-        $digitosIniciales = str_split($digitosIniciales);
-
-        $total = 0;
-        foreach ($digitosIniciales as $key => $value) {
-            $valorPosicion = ((int) $value * $arrayCoeficientes[$key]);
-
-            if ($valorPosicion >= 10) {
-                $valorPosicion = str_split($valorPosicion);
-                $valorPosicion = array_sum($valorPosicion);
-                $valorPosicion = (int) $valorPosicion;
-            }
-
-            $total = $total + $valorPosicion;
-        }
-
-        $residuo = $total % 10;
-
-        $resultado = ($residuo == 0) ? 0 : 10 - $residuo;
-
-        if ($resultado != $digitoVerificador) {
-            throw new Exception('Dígitos iniciales no validan contra Dígito Idenficador');
-        }
-
-        return true;
-    }
-
-    /**
-     * Algoritmo Modulo11 para validar RUC de sociedades privadas y públicas.
-     *
-     * El código verificador es el decimo digito para RUC de empresas privadas
-     * y el noveno dígito para RUC de empresas públicas
-     *
-     * Paso 1: Multiplicar cada dígito de los digitosIniciales por su respectivo
-     * coeficiente.
-     *
-     * Para RUC privadas el coeficiente esta definido y se multiplica con las siguientes
-     * posiciones del RUC:
-     *
-     *  Ejemplo
-     *  digitosIniciales posicion 1  x 4
-     *  digitosIniciales posicion 2  x 3
-     *  digitosIniciales posicion 3  x 2
-     *  digitosIniciales posicion 4  x 7
-     *  digitosIniciales posicion 5  x 6
-     *  digitosIniciales posicion 6  x 5
-     *  digitosIniciales posicion 7  x 4
-     *  digitosIniciales posicion 8  x 3
-     *  digitosIniciales posicion 9  x 2
-     *
-     * Para RUC privadas el coeficiente esta definido y se multiplica con las siguientes
-     * posiciones del RUC:
-     *
-     *  digitosIniciales posicion 1  x 3
-     *  digitosIniciales posicion 2  x 2
-     *  digitosIniciales posicion 3  x 7
-     *  digitosIniciales posicion 4  x 6
-     *  digitosIniciales posicion 5  x 5
-     *  digitosIniciales posicion 6  x 4
-     *  digitosIniciales posicion 7  x 3
-     *  digitosIniciales posicion 8  x 2
-     *
-     * Paso 2: Se suman los resultados y se obtiene total
-     *
-     * Paso 3: Divido total para 11, se guarda residuo. Se resta 11 menos el residuo.
-     * El valor obtenido debe concordar con el digitoVerificador
-     *
-     * Nota: Cuando el residuo es cero(0) el dígito verificador debe ser 0.
-     *
-     * @param string $digitosIniciales  Nueve primeros dígitos de RUC
-     * @param string $digitoVerificador Décimo dígito de RUC
-     * @param string $tipo              Tipo de identificador
-     *
-     * @throws exception Cuando los digitosIniciales no concuerdan contra
-     *                   el código verificador.
-     *
-     * @return bool
-     */
-    protected function algoritmoModulo11($digitosIniciales, $digitoVerificador, $tipo)
-    {
-        switch ($tipo) {
-            case 'ruc_privada':
-                $arrayCoeficientes = [4, 3, 2, 7, 6, 5, 4, 3, 2];
-                break;
-            case 'ruc_publica':
-                $arrayCoeficientes = [3, 2, 7, 6, 5, 4, 3, 2];
-                break;
-            default:
-                throw new Exception('Tipo de Identificacion no existe.');
-                break;
-        }
-
-        $digitoVerificador = (int) $digitoVerificador;
-        $digitosIniciales = str_split($digitosIniciales);
-
-        $total = 0;
-        foreach ($digitosIniciales as $key => $value) {
-            $valorPosicion = ((int) $value * $arrayCoeficientes[$key]);
-            $total = $total + $valorPosicion;
-        }
-
-        $residuo = $total % 11;
-
-        $resultado = ($residuo == 0) ? 0 : 11 - $residuo;
-
-        if ($resultado != $digitoVerificador) {
-            throw new Exception('Dígitos iniciales no validan contra Dígito Idenficador');
-        }
-
-        return true;
-    }
-
-    /**
-     * Get error.
-     *
-     * @return string Mensaje de error
-     */
-    public function getError()
+    public function getError(): string
     {
         return $this->error;
     }
 
-    /**
-     * Set error.
-     *
-     * @param string $newError
-     *
-     * @return object $this
-     */
-    public function setError($newError)
-    {
-        $this->error = $newError;
+    // ==================== Internal Validation Methods ====================
 
-        return $this;
+    private function performCedulaValidation(string $number): bool
+    {
+        try {
+            $this->assertValidInitialFormat($number, 10);
+            $provinceCode = (int) substr($number, 0, 2);
+            $this->assertValidProvinceCode($provinceCode);
+
+            if ($provinceCode !== self::FOREIGN_RESIDENT_CODE) {
+                $this->assertValidThirdDigit((int) $number[2], self::TYPE_CEDULA);
+            }
+
+            $this->assertValidModulo10(substr($number, 0, 9), (int) $number[9]);
+        } catch (InvalidArgumentException $e) {
+            $this->error = $e->getMessage();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private function performNaturalPersonRucValidation(string $number): bool
+    {
+        try {
+            $this->assertValidInitialFormat($number, 13);
+            $provinceCode = (int) substr($number, 0, 2);
+            $this->assertValidProvinceCode($provinceCode);
+
+            if ($provinceCode !== self::FOREIGN_RESIDENT_CODE) {
+                $this->assertValidThirdDigit((int) $number[2], self::TYPE_RUC_NATURAL);
+            }
+
+            $this->assertValidEstablishmentCode((int) substr($number, 10, 3));
+            $this->assertValidModulo10(substr($number, 0, 9), (int) $number[9]);
+        } catch (InvalidArgumentException $e) {
+            $this->error = $e->getMessage();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private function performPrivateCompanyRucValidation(string $number): bool
+    {
+        try {
+            $this->assertValidInitialFormat($number, 13);
+            $this->assertValidProvinceCode((int) substr($number, 0, 2));
+            $this->assertValidThirdDigit((int) $number[2], self::TYPE_RUC_PRIVATE);
+            $this->assertValidEstablishmentCode((int) substr($number, 10, 3));
+            $this->assertValidModulo11(
+                substr($number, 0, 9),
+                (int) $number[9],
+                self::MODULO_11_PRIVATE_COEFFICIENTS
+            );
+        } catch (InvalidArgumentException $e) {
+            $this->error = $e->getMessage();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private function performPublicCompanyRucValidation(string $number): bool
+    {
+        try {
+            $this->assertValidInitialFormat($number, 13);
+            $this->assertValidProvinceCode((int) substr($number, 0, 2));
+            $this->assertValidThirdDigit((int) $number[2], self::TYPE_RUC_PUBLIC);
+            $this->assertValidEstablishmentCode((int) substr($number, 9, 4));
+            $this->assertValidModulo11(
+                substr($number, 0, 8),
+                (int) $number[8],
+                self::MODULO_11_PUBLIC_COEFFICIENTS
+            );
+        } catch (InvalidArgumentException $e) {
+            $this->error = $e->getMessage();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    // ==================== Helper Methods ====================
+
+    private function isValidFormat(string $number): bool
+    {
+        if ($number === '') {
+            $this->error = 'Value cannot be empty';
+
+            return false;
+        }
+
+        if (!ctype_digit($number)) {
+            $this->error = 'Value can only contain digits';
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private function detectAndValidateRuc(string $number): bool
+    {
+        $thirdDigit = (int) $number[2];
+
+        if ($thirdDigit >= 0 && $thirdDigit <= 5) {
+            $this->documentType = self::TYPE_RUC_NATURAL;
+
+            return $this->performNaturalPersonRucValidation($number);
+        }
+
+        if ($thirdDigit === 6) {
+            $this->documentType = self::TYPE_RUC_PUBLIC;
+
+            return $this->performPublicCompanyRucValidation($number);
+        }
+
+        if ($thirdDigit === 9) {
+            $this->documentType = self::TYPE_RUC_PRIVATE;
+
+            return $this->performPrivateCompanyRucValidation($number);
+        }
+
+        $this->error = 'Invalid third digit for RUC. Must be 0-5 (natural), 6 (public), or 9 (private)';
+
+        return false;
+    }
+
+    private function assertValidInitialFormat(string $number, int $requiredLength): void
+    {
+        if ($number === '') {
+            throw new InvalidArgumentException('Value cannot be empty');
+        }
+
+        if (!ctype_digit($number)) {
+            throw new InvalidArgumentException('Value can only contain digits');
+        }
+
+        if (strlen($number) !== $requiredLength) {
+            throw new InvalidArgumentException("Value must have {$requiredLength} characters");
+        }
+    }
+
+    private function assertValidProvinceCode(int $code): void
+    {
+        $isValid = ($code >= 1 && $code <= 24) || $code === self::FOREIGN_RESIDENT_CODE;
+
+        if (!$isValid) {
+            throw new InvalidArgumentException(
+                'Province code (first two digits) must be between 01-24 or 30'
+            );
+        }
+    }
+
+    private function assertValidThirdDigit(int $digit, string $type): void
+    {
+        $isValid = match ($type) {
+            self::TYPE_CEDULA, self::TYPE_RUC_NATURAL => $digit >= 0 && $digit <= 5,
+            self::TYPE_RUC_PRIVATE => $digit === 9,
+            self::TYPE_RUC_PUBLIC  => $digit === 6,
+            default                => throw new InvalidArgumentException('Invalid identification type'),
+        };
+
+        if (!$isValid) {
+            $message = match ($type) {
+                self::TYPE_CEDULA, self::TYPE_RUC_NATURAL => 'Third digit must be between 0 and 5 for cedula and natural person RUC',
+                self::TYPE_RUC_PRIVATE => 'Third digit must be 9 for private companies',
+                self::TYPE_RUC_PUBLIC  => 'Third digit must be 6 for public companies',
+                default                => 'Invalid identification type',
+            };
+
+            throw new InvalidArgumentException($message);
+        }
+    }
+
+    private function assertValidEstablishmentCode(int $code): void
+    {
+        if ($code < 1) {
+            throw new InvalidArgumentException('Establishment code cannot be 0');
+        }
+    }
+
+    /**
+     * Modulo 10 algorithm for Cedula and Natural Person RUC.
+     *
+     * @param list<int> $coefficients
+     */
+    private function assertValidModulo10(string $initialDigits, int $checkDigit): void
+    {
+        $sum = 0;
+        $digits = str_split($initialDigits);
+
+        foreach ($digits as $index => $value) {
+            $product = (int) $value * self::MODULO_10_COEFFICIENTS[$index];
+            $sum += ($product >= 10) ? array_sum(str_split((string) $product)) : $product;
+        }
+
+        $remainder = $sum % 10;
+        $expected = ($remainder === 0) ? 0 : 10 - $remainder;
+
+        if ($expected !== $checkDigit) {
+            throw new InvalidArgumentException('Check digit validation failed');
+        }
+    }
+
+    /**
+     * Modulo 11 algorithm for Private and Public Company RUC.
+     *
+     * @param list<int> $coefficients
+     */
+    private function assertValidModulo11(string $initialDigits, int $checkDigit, array $coefficients): void
+    {
+        $sum = 0;
+        $digits = str_split($initialDigits);
+
+        foreach ($digits as $index => $value) {
+            $sum += (int) $value * $coefficients[$index];
+        }
+
+        $remainder = $sum % 11;
+        $expected = ($remainder === 0) ? 0 : 11 - $remainder;
+
+        if ($expected !== $checkDigit) {
+            throw new InvalidArgumentException('Check digit validation failed');
+        }
     }
 }
