@@ -250,15 +250,15 @@ class ValidadorEc
     protected function validarInicial(string $numero, int $caracteres): bool
     {
         if (empty($numero)) {
-            throw new InvalidArgumentException('Valor no puede estar vacio');
+            throw new InvalidArgumentException('Value cannot be empty');
         }
 
         if (!ctype_digit($numero)) {
-            throw new InvalidArgumentException('Valor ingresado solo puede tener dígitos');
+            throw new InvalidArgumentException('Value can only contain digits');
         }
 
         if (strlen($numero) !== $caracteres) {
-            throw new InvalidArgumentException("Valor ingresado debe tener {$caracteres} caracteres");
+            throw new InvalidArgumentException("Value must have {$caracteres} characters");
         }
 
         return true;
@@ -284,7 +284,7 @@ class ValidadorEc
 
         if (!$esProvinciaValida) {
             throw new InvalidArgumentException(
-                'Codigo de Provincia (dos primeros dígitos) no deben ser mayor a 24 ni menores a 0'
+                'Province code (first two digits) must be between 01-24 or 30'
             );
         }
 
@@ -312,7 +312,7 @@ class ValidadorEc
             case self::TIPO_RUC_NATURAL:
                 if ($digito < 0 || $digito > 5) {
                     throw new InvalidArgumentException(
-                        'Tercer dígito debe ser mayor o igual a 0 y menor a 6 para cédulas y RUC de persona natural'
+                        'Third digit must be between 0 and 5 for cedula and natural person RUC'
                     );
                 }
                 break;
@@ -320,7 +320,7 @@ class ValidadorEc
             case self::TIPO_RUC_PRIVADA:
                 if ($digito !== 9) {
                     throw new InvalidArgumentException(
-                        'Tercer dígito debe ser igual a 9 para sociedades privadas'
+                        'Third digit must be 9 for private companies'
                     );
                 }
                 break;
@@ -328,13 +328,13 @@ class ValidadorEc
             case self::TIPO_RUC_PUBLICA:
                 if ($digito !== 6) {
                     throw new InvalidArgumentException(
-                        'Tercer dígito debe ser igual a 6 para sociedades públicas'
+                        'Third digit must be 6 for public companies'
                     );
                 }
                 break;
 
             default:
-                throw new InvalidArgumentException('Tipo de Identificacion no existe.');
+                throw new InvalidArgumentException('Invalid identification type');
         }
 
         return true;
@@ -352,7 +352,7 @@ class ValidadorEc
     protected function validarCodigoEstablecimiento(string $numero): bool
     {
         if ((int) $numero < 1) {
-            throw new InvalidArgumentException('Código de establecimiento no puede ser 0');
+            throw new InvalidArgumentException('Establishment code cannot be 0');
         }
 
         return true;
@@ -396,7 +396,7 @@ class ValidadorEc
         $resultado = ($residuo === 0) ? 0 : 10 - $residuo;
 
         if ($resultado !== $digitoVerificador) {
-            throw new InvalidArgumentException('Dígitos iniciales no validan contra Dígito Idenficador');
+            throw new InvalidArgumentException('Check digit validation failed');
         }
 
         return true;
@@ -425,7 +425,7 @@ class ValidadorEc
         $coeficientes = match ($tipo) {
             self::TIPO_RUC_PRIVADA => [4, 3, 2, 7, 6, 5, 4, 3, 2],
             self::TIPO_RUC_PUBLICA => [3, 2, 7, 6, 5, 4, 3, 2],
-            default => throw new InvalidArgumentException('Tipo de Identificacion no existe.'),
+            default => throw new InvalidArgumentException('Invalid identification type'),
         };
 
         $digitoVerificador = (int) $digitoVerificador;
@@ -440,7 +440,7 @@ class ValidadorEc
         $resultado = ($residuo === 0) ? 0 : 11 - $residuo;
 
         if ($resultado !== $digitoVerificador) {
-            throw new InvalidArgumentException('Dígitos iniciales no validan contra Dígito Idenficador');
+            throw new InvalidArgumentException('Check digit validation failed');
         }
 
         return true;

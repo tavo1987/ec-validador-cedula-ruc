@@ -12,11 +12,11 @@ class ValidadorRucPersonaNaturalTest extends TestCase
     {
         $validarRucPersonaNatural = $this->validador->validarRucPersonaNatural('');
         $this->assertFalse($validarRucPersonaNatural);
-        $this->assertEquals('Valor no puede estar vacio', $this->validador->getError());
+        $this->assertEquals('Value cannot be empty', $this->validador->getError());
 
         $validarRucPersonaNatural = $this->validador->validarRucPersonaNatural();
         $this->assertFalse($validarRucPersonaNatural);
-        $this->assertEquals('Valor no puede estar vacio', $this->validador->getError());
+        $this->assertEquals('Value cannot be empty', $this->validador->getError());
     }
 
     public function test_mostrar_error_si_parametro_pasado_es_un_tipo_de_dato_entero_en_ruc_persona_natural(): void
@@ -25,7 +25,7 @@ class ValidadorRucPersonaNaturalTest extends TestCase
         // parametro con 0 adelante pero como integer, debe dar false ya que php lo convierte a 0
         $validarRucPersonaNatural = $this->validador->validarRucPersonaNatural((string) $ruc);
         $this->assertFalse($validarRucPersonaNatural);
-        $this->assertEquals('Valor ingresado debe tener 13 caracteres', $this->validador->getError());
+        $this->assertEquals('Value must have 13 characters', $this->validador->getError());
     }
 
     public function test_validacion_falla_si_se_ingresa_letras_en_ruc_persona_natural(): void
@@ -34,11 +34,11 @@ class ValidadorRucPersonaNaturalTest extends TestCase
         $ruc = 'abcdsa';
         $validarRucPersonaNatural = $this->validador->validarRucPersonaNatural($ruc);
         $this->assertFalse($validarRucPersonaNatural);
-        $this->assertEquals('Valor ingresado solo puede tener dígitos', $this->validador->getError());
+        $this->assertEquals('Value can only contain digits', $this->validador->getError());
 
         $validarRucPersonaNatural = $this->validador->validarRucPersonaNatural($ruc);
         $this->assertFalse($validarRucPersonaNatural);
-        $this->assertEquals('Valor ingresado solo puede tener dígitos', $this->validador->getError());
+        $this->assertEquals('Value can only contain digits', $this->validador->getError());
     }
 
     public function test_ruc_de_persona_natural_debe_tener_trece_caracteres_exactos(): void
@@ -48,7 +48,7 @@ class ValidadorRucPersonaNaturalTest extends TestCase
         $validarRucPersonaNatural = $this->validador->validarRucPersonaNatural($ruc);
 
         $this->assertFalse($validarRucPersonaNatural);
-        $this->assertEquals('Valor ingresado debe tener 13 caracteres', $this->validador->getError());
+        $this->assertEquals('Value must have 13 characters', $this->validador->getError());
     }
 
     public function test_revisar_codigo_de_provincia_debe_estar_entre_cero_y_veinticuatro_ruc_persona_natural(): void
@@ -57,7 +57,7 @@ class ValidadorRucPersonaNaturalTest extends TestCase
 
         $validarRucPersonaNatural = $this->validador->validarRucPersonaNatural($ruc);
         $this->assertFalse($validarRucPersonaNatural);
-        $this->assertEquals('Codigo de Provincia (dos primeros dígitos) no deben ser mayor a 24 ni menores a 0', $this->validador->getError());
+        $this->assertEquals('Province code (first two digits) must be between 01-24 or 30', $this->validador->getError());
     }
 
     public function test_revisar_tercer_digito_debe_ser_mayor_igual_a_cero_y_menor_a_seis_persona_natural(): void
@@ -67,7 +67,7 @@ class ValidadorRucPersonaNaturalTest extends TestCase
 
         $validarRucPersonaNatural = $this->validador->validarRucPersonaNatural($ruc);
         $this->assertFalse($validarRucPersonaNatural);
-        $this->assertEquals('Tercer dígito debe ser mayor o igual a 0 y menor a 6 para cédulas y RUC de persona natural', $this->validador->getError());
+        $this->assertEquals('Third digit must be between 0 and 5 for cedula and natural person RUC', $this->validador->getError());
     }
 
     public function test_revisar_que_codigo_de_establecimiento_en_los_tres_ultimos_digitos_no_sean_menores_a_uno_persona_natural(): void
@@ -77,7 +77,7 @@ class ValidadorRucPersonaNaturalTest extends TestCase
 
         $validarRucPersonaNatural = $this->validador->validarRucPersonaNatural($ruc);
         $this->assertFalse($validarRucPersonaNatural);
-        $this->assertEquals('Código de establecimiento no puede ser 0', $this->validador->getError());
+        $this->assertEquals('Establishment code cannot be 0', $this->validador->getError());
     }
 
     public function test_ruc_persona_natural_incorrecta_de_acuerdo_al_algoritmo_modulo_diez(): void
@@ -87,7 +87,7 @@ class ValidadorRucPersonaNaturalTest extends TestCase
 
         $validarRucPersonaNatural = $this->validador->validarRucPersonaNatural($ruc);
         $this->assertFalse($validarRucPersonaNatural);
-        $this->assertEquals('Dígitos iniciales no validan contra Dígito Idenficador', $this->validador->getError());
+        $this->assertEquals('Check digit validation failed', $this->validador->getError());
     }
 
     public function test_revisar_que_ruc_correctos_validen_persona_natural(): void
@@ -127,7 +127,7 @@ class ValidadorRucPersonaNaturalTest extends TestCase
         $validarRucPersonaNatural = $this->validador->validarRucPersonaNatural($ruc);
         // Province validation should pass (may fail on check digit)
         $this->assertNotEquals(
-            'Codigo de Provincia (dos primeros dígitos) no deben ser mayor a 24 ni menores a 0',
+            'Province code (first two digits) must be between 01-24 or 30',
             $this->validador->getError()
         );
     }
@@ -138,7 +138,7 @@ class ValidadorRucPersonaNaturalTest extends TestCase
         $ruc = '0152345678001';
         $this->validador->validarRucPersonaNatural($ruc);
         $this->assertNotEquals(
-            'Tercer dígito debe ser mayor o igual a 0 y menor a 6 para cédulas y RUC de persona natural',
+            'Third digit must be between 0 and 5 for cedula and natural person RUC',
             $this->validador->getError()
         );
 
@@ -147,7 +147,7 @@ class ValidadorRucPersonaNaturalTest extends TestCase
         $validarRucPersonaNatural = $this->validador->validarRucPersonaNatural($ruc);
         $this->assertFalse($validarRucPersonaNatural);
         $this->assertEquals(
-            'Tercer dígito debe ser mayor o igual a 0 y menor a 6 para cédulas y RUC de persona natural',
+            'Third digit must be between 0 and 5 for cedula and natural person RUC',
             $this->validador->getError()
         );
     }
@@ -168,7 +168,7 @@ class ValidadorRucPersonaNaturalTest extends TestCase
 
         // Should NOT get third digit error for code 30
         $this->assertNotEquals(
-            'Tercer dígito debe ser mayor o igual a 0 y menor a 6 para cédulas y RUC de persona natural',
+            'Third digit must be between 0 and 5 for cedula and natural person RUC',
             $this->validador->getError(),
             'Third digit validation should be skipped for province code 30'
         );
@@ -184,7 +184,7 @@ class ValidadorRucPersonaNaturalTest extends TestCase
 
         // Should NOT get province code error
         $this->assertNotEquals(
-            'Codigo de Provincia (dos primeros dígitos) no deben ser mayor a 24 ni menores a 0',
+            'Province code (first two digits) must be between 01-24 or 30',
             $this->validador->getError(),
             'Province code 30 should be accepted for RUC'
         );

@@ -12,11 +12,11 @@ class ValidadorRucSociedadPrivadaTest extends TestCase
     {
         $validarRucSociedadPrivada = $this->validador->validarRucSociedadPrivada('');
         $this->assertFalse($validarRucSociedadPrivada);
-        $this->assertEquals('Valor no puede estar vacio', $this->validador->getError());
+        $this->assertEquals('Value cannot be empty', $this->validador->getError());
 
         $validarRucSociedadPrivada = $this->validador->validarRucSociedadPrivada();
         $this->assertFalse($validarRucSociedadPrivada);
-        $this->assertEquals('Valor no puede estar vacio', $this->validador->getError());
+        $this->assertEquals('Value cannot be empty', $this->validador->getError());
     }
 
     public function test_validacion_falla_si_parametro_pasado_es_un_tipo_de_dato_entero(): void
@@ -26,7 +26,7 @@ class ValidadorRucSociedadPrivadaTest extends TestCase
         $validarRucSociedadPrivada = $this->validador->validarRucSociedadPrivada((string) $ruc);
 
         $this->assertFalse($validarRucSociedadPrivada);
-        $this->assertEquals('Valor ingresado debe tener 13 caracteres', $this->validador->getError());
+        $this->assertEquals('Value must have 13 characters', $this->validador->getError());
     }
 
     public function test_validacion_falla_si_se_ingresa_letras(): void
@@ -36,7 +36,7 @@ class ValidadorRucSociedadPrivadaTest extends TestCase
         $validarRucSociedadPrivada = $this->validador->validarRucSociedadPrivada($ruc);
 
         $this->assertFalse($validarRucSociedadPrivada);
-        $this->assertEquals('Valor ingresado solo puede tener dígitos', $this->validador->getError());
+        $this->assertEquals('Value can only contain digits', $this->validador->getError());
     }
 
     public function test_validacion_falla_si_se_ingresa_caracteres_especiales(): void
@@ -46,7 +46,7 @@ class ValidadorRucSociedadPrivadaTest extends TestCase
         $resultado = $this->validador->validarRucSociedadPrivada($ruc);
 
         $this->assertFalse($resultado);
-        $this->assertEquals('Valor ingresado solo puede tener dígitos', $this->validador->getError());
+        $this->assertEquals('Value can only contain digits', $this->validador->getError());
     }
 
     public function test_validacion_falla_si_se_ingresa_numeros_negativos(): void
@@ -56,7 +56,7 @@ class ValidadorRucSociedadPrivadaTest extends TestCase
         $validarRucSociedadPrivada = $this->validador->validarRucSociedadPrivada($ruc);
 
         $this->assertFalse($validarRucSociedadPrivada);
-        $this->assertEquals('Valor ingresado solo puede tener dígitos', $this->validador->getError());
+        $this->assertEquals('Value can only contain digits', $this->validador->getError());
     }
 
     public function test_validacion_falla_si_se_ingresa_numeros_decimales(): void
@@ -66,7 +66,7 @@ class ValidadorRucSociedadPrivadaTest extends TestCase
         $validarRucSociedadPrivada = $this->validador->validarRucSociedadPrivada($ruc);
 
         $this->assertFalse($validarRucSociedadPrivada);
-        $this->assertEquals('Valor ingresado solo puede tener dígitos', $this->validador->getError());
+        $this->assertEquals('Value can only contain digits', $this->validador->getError());
     }
 
     public function test_validacion_falla_si_se_ingresa_mas_de_trece_digitos(): void
@@ -76,7 +76,7 @@ class ValidadorRucSociedadPrivadaTest extends TestCase
         $validarRucSociedadPrivada = $this->validador->validarRucSociedadPrivada($ruc);
 
         $this->assertFalse($validarRucSociedadPrivada);
-        $this->assertEquals('Valor ingresado debe tener 13 caracteres', $this->validador->getError());
+        $this->assertEquals('Value must have 13 characters', $this->validador->getError());
     }
 
     public function test_validar_que_el_codigo_provincial_sea_correcto(): void
@@ -86,7 +86,7 @@ class ValidadorRucSociedadPrivadaTest extends TestCase
         $validarRucSociedadPrivada = $this->validador->validarRucSociedadPrivada($ruc);
 
         $this->assertFalse($validarRucSociedadPrivada);
-        $this->assertEquals('Codigo de Provincia (dos primeros dígitos) no deben ser mayor a 24 ni menores a 0', $this->validador->getError());
+        $this->assertEquals('Province code (first two digits) must be between 01-24 or 30', $this->validador->getError());
     }
 
     public function test_tercer_digito_deber_ser_igual_a_nueve(): void
@@ -96,7 +96,7 @@ class ValidadorRucSociedadPrivadaTest extends TestCase
         $validarRucSociedadPrivada = $this->validador->validarRucSociedadPrivada($ruc);
 
         $this->assertFalse($validarRucSociedadPrivada);
-        $this->assertEquals('Tercer dígito debe ser igual a 9 para sociedades privadas', $this->validador->getError());
+        $this->assertEquals('Third digit must be 9 for private companies', $this->validador->getError());
     }
 
     public function test_codigo_de_establecimiento_no_deben_ser_menores_a_uno(): void
@@ -106,7 +106,7 @@ class ValidadorRucSociedadPrivadaTest extends TestCase
         $validarRucSociedadPrivada = $this->validador->validarRucSociedadPrivada($ruc);
 
         $this->assertFalse($validarRucSociedadPrivada);
-        $this->assertEquals('Código de establecimiento no puede ser 0', $this->validador->getError());
+        $this->assertEquals('Establishment code cannot be 0', $this->validador->getError());
     }
 
     public function test_ruc_sociedad_privada_incorrecto(): void
@@ -116,7 +116,7 @@ class ValidadorRucSociedadPrivadaTest extends TestCase
         $validarRucSociedadPrivada = $this->validador->validarRucSociedadPrivada($ruc);
 
         $this->assertFalse($validarRucSociedadPrivada);
-        $this->assertEquals('Dígitos iniciales no validan contra Dígito Idenficador', $this->validador->getError());
+        $this->assertEquals('Check digit validation failed', $this->validador->getError());
     }
 
     public function test_ruc_sociedad_privada_correcto(): void
@@ -148,7 +148,7 @@ class ValidadorRucSociedadPrivadaTest extends TestCase
         $ruc = '0962397535001';
         $resultado = $this->validador->validarRucSociedadPrivada($ruc);
         $this->assertFalse($resultado);
-        $this->assertEquals('Tercer dígito debe ser igual a 9 para sociedades privadas', $this->validador->getError());
+        $this->assertEquals('Third digit must be 9 for private companies', $this->validador->getError());
     }
 
     public function test_ruc_sociedad_privada_tercer_digito_no_es_natural(): void
@@ -157,6 +157,6 @@ class ValidadorRucSociedadPrivadaTest extends TestCase
         $ruc = '0902397535001';
         $resultado = $this->validador->validarRucSociedadPrivada($ruc);
         $this->assertFalse($resultado);
-        $this->assertEquals('Tercer dígito debe ser igual a 9 para sociedades privadas', $this->validador->getError());
+        $this->assertEquals('Third digit must be 9 for private companies', $this->validador->getError());
     }
 }

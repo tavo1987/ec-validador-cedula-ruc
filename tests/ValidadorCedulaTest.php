@@ -12,11 +12,11 @@ class ValidadorCedulaTest extends TestCase
     {
         $validarCedula = $this->validador->validarCedula('');
         $this->assertFalse($validarCedula);
-        $this->assertEquals('Valor no puede estar vacio', $this->validador->getError());
+        $this->assertEquals('Value cannot be empty', $this->validador->getError());
 
         $validarCedula = $this->validador->validarCedula();
         $this->assertFalse($validarCedula);
-        $this->assertEquals('Valor no puede estar vacio', $this->validador->getError());
+        $this->assertEquals('Value cannot be empty', $this->validador->getError());
     }
 
     public function test_mostrar_error_si_parametro_pasado_es_un_tipo_de_dato_entero(): void
@@ -25,7 +25,7 @@ class ValidadorCedulaTest extends TestCase
         // parametro con 0 adelante pero como integer, debe dar false ya que php lo convierte a 0
         $validarCedula = $this->validador->validarCedula((string) $cedula);
         $this->assertFalse($validarCedula);
-        $this->assertEquals('Valor ingresado debe tener 10 caracteres', $this->validador->getError());
+        $this->assertEquals('Value must have 10 characters', $this->validador->getError());
     }
 
     public function test_validacion_falla_si_se_ingresa_letras(): void
@@ -35,7 +35,7 @@ class ValidadorCedulaTest extends TestCase
         $resultado = $this->validador->validarCedula($cedula);
 
         $this->assertFalse($resultado);
-        $this->assertEquals('Valor ingresado solo puede tener dígitos', $this->validador->getError());
+        $this->assertEquals('Value can only contain digits', $this->validador->getError());
     }
 
     public function test_validacion_falla_si_se_ingresa_caracteres_especiales(): void
@@ -45,7 +45,7 @@ class ValidadorCedulaTest extends TestCase
         $resultado = $this->validador->validarCedula($cedula);
 
         $this->assertFalse($resultado);
-        $this->assertEquals('Valor ingresado solo puede tener dígitos', $this->validador->getError());
+        $this->assertEquals('Value can only contain digits', $this->validador->getError());
     }
 
     public function test_validacion_falla_si_se_ingresa_numeros_negativos(): void
@@ -54,7 +54,7 @@ class ValidadorCedulaTest extends TestCase
 
         $resultado = $this->validador->validarCedula($cedula);
         $this->assertFalse($resultado);
-        $this->assertEquals('Valor ingresado solo puede tener dígitos', $this->validador->getError());
+        $this->assertEquals('Value can only contain digits', $this->validador->getError());
     }
 
     public function test_validacion_falla_si_se_ingresa_numeros_decimales(): void
@@ -63,7 +63,7 @@ class ValidadorCedulaTest extends TestCase
 
         $resultado = $this->validador->validarCedula($cedula);
         $this->assertFalse($resultado);
-        $this->assertEquals('Valor ingresado solo puede tener dígitos', $this->validador->getError());
+        $this->assertEquals('Value can only contain digits', $this->validador->getError());
     }
 
     public function test_validacion_falla_si_se_ingresa_mas_de_diez_digitos(): void
@@ -73,7 +73,7 @@ class ValidadorCedulaTest extends TestCase
         $resultado = $this->validador->validarCedula($cedula);
 
         $this->assertFalse($resultado);
-        $this->assertEquals('Valor ingresado debe tener 10 caracteres', $this->validador->getError());
+        $this->assertEquals('Value must have 10 characters', $this->validador->getError());
     }
 
     public function test_validar_codigo_provincial_sea_correcto(): void
@@ -83,7 +83,7 @@ class ValidadorCedulaTest extends TestCase
         $resultado = $this->validador->validarCedula($cedula);
 
         $this->assertFalse($resultado);
-        $this->assertEquals('Codigo de Provincia (dos primeros dígitos) no deben ser mayor a 24 ni menores a 0', $this->validador->getError());
+        $this->assertEquals('Province code (first two digits) must be between 01-24 or 30', $this->validador->getError());
     }
 
     public function test_validacion_falla_si_el_tercer_digito_es_menor_a_cero_y_mayor_seis(): void
@@ -93,7 +93,7 @@ class ValidadorCedulaTest extends TestCase
         $resultado = $this->validador->validarCedula($cedula);
 
         $this->assertFalse($resultado);
-        $this->assertEquals('Tercer dígito debe ser mayor o igual a 0 y menor a 6 para cédulas y RUC de persona natural', $this->validador->getError());
+        $this->assertEquals('Third digit must be between 0 and 5 for cedula and natural person RUC', $this->validador->getError());
     }
 
     public function test_cedula_incorrecta(): void
@@ -104,7 +104,7 @@ class ValidadorCedulaTest extends TestCase
 
         $this->assertFalse($resultado);
 
-        $this->assertEquals('Dígitos iniciales no validan contra Dígito Idenficador', $this->validador->getError());
+        $this->assertEquals('Check digit validation failed', $this->validador->getError());
     }
 
     public function test_cedula_correcta(): void
@@ -130,7 +130,7 @@ class ValidadorCedulaTest extends TestCase
         $resultado = $this->validador->validarCedula($cedula);
 
         $this->assertFalse($resultado);
-        $this->assertEquals('Codigo de Provincia (dos primeros dígitos) no deben ser mayor a 24 ni menores a 0', $this->validador->getError());
+        $this->assertEquals('Province code (first two digits) must be between 01-24 or 30', $this->validador->getError());
     }
 
     public function test_cedula_con_espacios_falla(): void
@@ -140,7 +140,7 @@ class ValidadorCedulaTest extends TestCase
         $resultado = $this->validador->validarCedula($cedula);
 
         $this->assertFalse($resultado);
-        $this->assertEquals('Valor ingresado solo puede tener dígitos', $this->validador->getError());
+        $this->assertEquals('Value can only contain digits', $this->validador->getError());
     }
 
     public function test_cedula_con_menos_de_diez_digitos_falla(): void
@@ -150,7 +150,7 @@ class ValidadorCedulaTest extends TestCase
         $resultado = $this->validador->validarCedula($cedula);
 
         $this->assertFalse($resultado);
-        $this->assertEquals('Valor ingresado debe tener 10 caracteres', $this->validador->getError());
+        $this->assertEquals('Value must have 10 characters', $this->validador->getError());
     }
 
     public function test_cedula_todas_las_provincias_validas(): void
@@ -167,7 +167,7 @@ class ValidadorCedulaTest extends TestCase
             // The full cedula may not pass modulo 10
             $this->validador->validarCedula($cedula);
             $this->assertNotEquals(
-                'Codigo de Provincia (dos primeros dígitos) no deben ser mayor a 24 ni menores a 0',
+                'Province code (first two digits) must be between 01-24 or 30',
                 $this->validador->getError(),
                 "Province code should be valid for cedula: {$cedula}"
             );
@@ -180,7 +180,7 @@ class ValidadorCedulaTest extends TestCase
         $cedulaCon0 = '0102345672';
         $this->validador->validarCedula($cedulaCon0);
         $this->assertNotEquals(
-            'Tercer dígito debe ser mayor o igual a 0 y menor a 6 para cédulas y RUC de persona natural',
+            'Third digit must be between 0 and 5 for cedula and natural person RUC',
             $this->validador->getError()
         );
 
@@ -188,7 +188,7 @@ class ValidadorCedulaTest extends TestCase
         $cedulaCon5 = '0152345672';
         $this->validador->validarCedula($cedulaCon5);
         $this->assertNotEquals(
-            'Tercer dígito debe ser mayor o igual a 0 y menor a 6 para cédulas y RUC de persona natural',
+            'Third digit must be between 0 and 5 for cedula and natural person RUC',
             $this->validador->getError()
         );
 
@@ -197,7 +197,7 @@ class ValidadorCedulaTest extends TestCase
         $resultado = $this->validador->validarCedula($cedulaCon6);
         $this->assertFalse($resultado);
         $this->assertEquals(
-            'Tercer dígito debe ser mayor o igual a 0 y menor a 6 para cédulas y RUC de persona natural',
+            'Third digit must be between 0 and 5 for cedula and natural person RUC',
             $this->validador->getError()
         );
     }
@@ -218,7 +218,7 @@ class ValidadorCedulaTest extends TestCase
 
         // Should NOT get province code error
         $this->assertNotEquals(
-            'Codigo de Provincia (dos primeros dígitos) no deben ser mayor a 24 ni menores a 0',
+            'Province code (first two digits) must be between 01-24 or 30',
             $this->validador->getError(),
             'Province code 30 should be accepted for foreign residents'
         );
@@ -238,7 +238,7 @@ class ValidadorCedulaTest extends TestCase
 
         // Should NOT get third digit error for code 30
         $this->assertNotEquals(
-            'Tercer dígito debe ser mayor o igual a 0 y menor a 6 para cédulas y RUC de persona natural',
+            'Third digit must be between 0 and 5 for cedula and natural person RUC',
             $this->validador->getError(),
             'Third digit validation should be skipped for province code 30'
         );
@@ -247,7 +247,7 @@ class ValidadorCedulaTest extends TestCase
         $cedula = '3092345678';
         $this->validador->validarCedula($cedula);
         $this->assertNotEquals(
-            'Tercer dígito debe ser mayor o igual a 0 y menor a 6 para cédulas y RUC de persona natural',
+            'Third digit must be between 0 and 5 for cedula and natural person RUC',
             $this->validador->getError(),
             'Third digit 9 should be allowed for province code 30'
         );
@@ -265,7 +265,7 @@ class ValidadorCedulaTest extends TestCase
         // If it fails, it should be due to check digit, not province or third digit
         if (!$resultado) {
             $this->assertEquals(
-                'Dígitos iniciales no validan contra Dígito Idenficador',
+                'Check digit validation failed',
                 $this->validador->getError()
             );
         }
