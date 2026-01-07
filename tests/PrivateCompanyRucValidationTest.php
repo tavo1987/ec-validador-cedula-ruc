@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Tavo\Tests;
 
-use Tavo\ValidadorEc;
-
 class PrivateCompanyRucValidationTest extends TestCase
 {
     public function test_empty_ruc_fails(): void
