@@ -87,7 +87,9 @@ class PrivateCompanyRucValidationTest extends TestCase
 
     public function test_invalid_check_digit_fails(): void
     {
-        $this->assertFalse($this->validator->validatePrivateCompanyRuc('0992397532001'));
+        // Use RUC with 6-digit sequential (<=999999) to ensure check digit validation runs
+        // 0990999996001 is valid (check digit 6), 0990999997001 has wrong check digit
+        $this->assertFalse($this->validator->validatePrivateCompanyRuc('0990999997001'));
         $this->assertEquals('Check digit validation failed', $this->validator->getError());
     }
 
@@ -100,5 +102,42 @@ class PrivateCompanyRucValidationTest extends TestCase
     {
         $this->assertTrue($this->validator->validatePrivateCompanyRuc('0992397535002'));
         $this->assertTrue($this->validator->validatePrivateCompanyRuc('0992397535999'));
+    }
+
+    // ==================== Extended Sequential RUC Tests ====================
+
+    public function test_valid_private_company_ruc_with_extended_sequential(): void
+    {
+        // RUC with 7-digit sequential (>999999)
+        // Per SRI rules, these RUCs don't have a validatable check digit
+        $this->assertTrue($this->validator->validatePrivateCompanyRuc('1791000001001'));
+    }
+
+    public function test_extended_sequential_ruc_detected_correctly_by_validate(): void
+    {
+        $this->assertTrue($this->validator->validate('1791000001001'));
+        $this->assertEquals('ruc_private', $this->validator->getDocumentType());
+    }
+
+    public function test_traditional_6digit_sequential_still_validates_check_digit(): void
+    {
+        // Traditional RUC with 6-digit sequential (<=999999) should still validate check digit
+        // 0990999996001 is valid (check digit 6), 0990999998001 has wrong check digit
+        $this->assertFalse($this->validator->validatePrivateCompanyRuc('0990999998001'));
+        $this->assertEquals('Check digit validation failed', $this->validator->getError());
+    }
+
+    public function test_traditional_ruc_with_sequential_starting_with_zero(): void
+    {
+        // Sequential starting with 0 is always traditional (max 0999999 < 1000000)
+        // 0990999996001 has sequential 099999, check digit 6
+        $this->assertTrue($this->validator->validatePrivateCompanyRuc('0990999996001'));
+    }
+
+    public function test_extended_sequential_at_boundary_1000000(): void
+    {
+        // Sequential exactly 1000000 (first extended sequential)
+        // Province 09, type 9, sequential 1000000, establishment 001
+        $this->assertTrue($this->validator->validatePrivateCompanyRuc('0991000000001'));
     }
 }

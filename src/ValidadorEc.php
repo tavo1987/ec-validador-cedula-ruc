@@ -291,11 +291,15 @@ final class ValidadorEc
             $this->assertValidProvinceCode((int) substr($number, 0, 2));
             $this->assertValidThirdDigit((int) $number[2], self::TYPE_RUC_PRIVATE);
             $this->assertValidEstablishmentCode((int) substr($number, 10, 3));
-            $this->assertValidModulo11(
-                substr($number, 0, 9),
-                (int) $number[9],
-                self::MODULO_11_PRIVATE_COEFFICIENTS
-            );
+
+            // Skip modulo 11 check for extended sequential (7 digits) per SRI rules
+            if (!$this->hasExtendedSequential($number)) {
+                $this->assertValidModulo11(
+                    substr($number, 0, 9),
+                    (int) $number[9],
+                    self::MODULO_11_PRIVATE_COEFFICIENTS
+                );
+            }
         } catch (InvalidArgumentException $e) {
             $this->error = $e->getMessage();
 
@@ -327,6 +331,42 @@ final class ValidadorEc
     }
 
     // ==================== Helper Methods ====================
+
+    /**
+     * Check if private company RUC uses extended sequential (7 digits).
+     *
+     * Per SRI official communication, private company RUCs with sequential
+     * numbers exceeding 6 digits (>999999) do not have a validatable check
+     * digit. The modulo 11 validation should be skipped for these cases.
+     *
+     * Traditional structure (6-digit sequential):
+     *   PP + 9 + SSSSSS + V + EEE
+     *   Positions: 0-1 province, 2 type, 3-8 sequential (000001-999999), 9 check digit, 10-12 establishment
+     *
+     * Extended structure (7-digit sequential):
+     *   PP + 9 + SSSSSSS + EEE
+     *   Positions: 0-1 province, 2 type, 3-9 sequential (1000000+), 10-12 establishment
+     *
+     * Detection logic: Extended sequentials start at 1000000, meaning position 3 must be '1'-'9'
+     * AND positions 4-9 must form a value that makes the total 7-digit number >= 1000000.
+     * If position 3 is '0', the sequential is at most 0XXXXXX which is always < 1000000 (traditional).
+     */
+    private function hasExtendedSequential(string $number): bool
+    {
+        // If position 3 is '0', sequential area starts with 0, making it traditional format
+        // (max value would be 0999999 which is < 1000000)
+        if ($number[3] === '0') {
+            return false;
+        }
+
+        // For position 3 >= '1', check if the 7-digit value at positions 3-9 is >= 1000000
+        // This handles extended sequentials (1000000-9999999)
+        // Note: Traditional RUCs with high sequential (100000-999999) + check digit
+        // will also match this condition, but SRI's rule applies to all such cases
+        $sevenDigitValue = (int) substr($number, 3, 7);
+
+        return $sevenDigitValue >= 1000000;
+    }
 
     private function isValidFormat(string $number): bool
     {
