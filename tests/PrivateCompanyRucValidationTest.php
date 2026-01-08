@@ -126,4 +126,18 @@ class PrivateCompanyRucValidationTest extends TestCase
         $this->assertFalse($this->validator->validatePrivateCompanyRuc('0990999998001'));
         $this->assertEquals('Check digit validation failed', $this->validator->getError());
     }
+
+    public function test_traditional_ruc_with_sequential_starting_with_zero(): void
+    {
+        // Sequential starting with 0 is always traditional (max 0999999 < 1000000)
+        // 0990999996001 has sequential 099999, check digit 6
+        $this->assertTrue($this->validator->validatePrivateCompanyRuc('0990999996001'));
+    }
+
+    public function test_extended_sequential_at_boundary_1000000(): void
+    {
+        // Sequential exactly 1000000 (first extended sequential)
+        // Province 09, type 9, sequential 1000000, establishment 001
+        $this->assertTrue($this->validator->validatePrivateCompanyRuc('0991000000001'));
+    }
 }
