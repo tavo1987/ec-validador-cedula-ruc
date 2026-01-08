@@ -291,11 +291,15 @@ final class ValidadorEc
             $this->assertValidProvinceCode((int) substr($number, 0, 2));
             $this->assertValidThirdDigit((int) $number[2], self::TYPE_RUC_PRIVATE);
             $this->assertValidEstablishmentCode((int) substr($number, 10, 3));
-            $this->assertValidModulo11(
-                substr($number, 0, 9),
-                (int) $number[9],
-                self::MODULO_11_PRIVATE_COEFFICIENTS
-            );
+
+            // Skip modulo 11 check for extended sequential (7 digits) per SRI rules
+            if (!$this->hasExtendedSequential($number)) {
+                $this->assertValidModulo11(
+                    substr($number, 0, 9),
+                    (int) $number[9],
+                    self::MODULO_11_PRIVATE_COEFFICIENTS
+                );
+            }
         } catch (InvalidArgumentException $e) {
             $this->error = $e->getMessage();
 
@@ -327,6 +331,23 @@ final class ValidadorEc
     }
 
     // ==================== Helper Methods ====================
+
+    /**
+     * Check if private company RUC uses extended sequential (7 digits).
+     *
+     * Per SRI official communication, private company RUCs with sequential
+     * numbers exceeding 6 digits (>999999) do not have a validatable check
+     * digit. The modulo 11 validation should be skipped for these cases.
+     *
+     * Traditional structure (6-digit sequential): XX + 9 + XXXXXX + V + 001
+     * Extended structure (7-digit sequential):    XX + 9 + XXXXXXX + 001
+     */
+    private function hasExtendedSequential(string $number): bool
+    {
+        $sequentialPart = (int) substr($number, 3, 7);
+
+        return $sequentialPart > 999999;
+    }
 
     private function isValidFormat(string $number): bool
     {
