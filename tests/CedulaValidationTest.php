@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tavo\Tests;
 
+use Tavo\ValidadorEc;
+
 class CedulaValidationTest extends TestCase
 {
     public function test_empty_cedula_fails(): void
@@ -80,8 +82,10 @@ class CedulaValidationTest extends TestCase
 
     public function test_invalid_third_digit_fails(): void
     {
-        $this->assertFalse($this->validator->validateCedula('0996687856'));
-        $this->assertEquals('Third digit must be between 0 and 5 for cedula and natural person RUC', $this->validator->getError());
+        foreach (['0170000014', '0180000014', '0190000014'] as $cedula) {
+            $this->assertFalse($this->validator->validateCedula($cedula));
+            $this->assertEquals('Third digit must be between 0 and 6 for cedula', $this->validator->getError());
+        }
     }
 
     public function test_invalid_check_digit_fails(): void
@@ -95,6 +99,23 @@ class CedulaValidationTest extends TestCase
         $this->assertTrue($this->validator->validateCedula('0602910945'));
         $this->assertTrue($this->validator->validateCedula('0926687856'));
         $this->assertTrue($this->validator->validateCedula('0910005917'));
+    }
+
+    public function test_valid_cedula_with_third_digit_six(): void
+    {
+        // Synthetic fixture with a calculated modulo 10 check digit.
+        $this->assertTrue($this->validator->validateCedula('0160000014'));
+        $this->assertSame('', $this->validator->getError());
+        $this->assertTrue($this->validator->validate('0160000014'));
+        $this->assertSame(ValidadorEc::TYPE_CEDULA, $this->validator->getDocumentType());
+        $this->assertTrue(ValidadorEc::isValidCedula('0160000014'));
+        $this->assertTrue(ValidadorEc::isValid('0160000014'));
+    }
+
+    public function test_cedula_with_third_digit_six_requires_valid_check_digit(): void
+    {
+        $this->assertFalse($this->validator->validateCedula('0160000015'));
+        $this->assertSame('Check digit validation failed', $this->validator->getError());
     }
 
     public function test_valid_cedulas_from_different_provinces(): void
@@ -120,21 +141,25 @@ class CedulaValidationTest extends TestCase
         // Third digit 0 - should pass third digit validation
         $this->validator->validateCedula('0102345672');
         $this->assertNotEquals(
-            'Third digit must be between 0 and 5 for cedula and natural person RUC',
+            'Third digit must be between 0 and 6 for cedula',
             $this->validator->getError()
         );
 
         // Third digit 5 - should pass third digit validation
         $this->validator->validateCedula('0152345672');
         $this->assertNotEquals(
-            'Third digit must be between 0 and 5 for cedula and natural person RUC',
+            'Third digit must be between 0 and 6 for cedula',
             $this->validator->getError()
         );
 
-        // Third digit 6 - should fail for regular provinces
-        $this->assertFalse($this->validator->validateCedula('0162345672'));
+        // Third digit 6 - should pass for regular provinces
+        $this->assertTrue($this->validator->validateCedula('0160000014'));
+        $this->assertSame('', $this->validator->getError());
+
+        // Third digit 7 - should fail for regular provinces
+        $this->assertFalse($this->validator->validateCedula('0172345672'));
         $this->assertEquals(
-            'Third digit must be between 0 and 5 for cedula and natural person RUC',
+            'Third digit must be between 0 and 6 for cedula',
             $this->validator->getError()
         );
     }
@@ -154,17 +179,17 @@ class CedulaValidationTest extends TestCase
 
     public function test_province_code_30_skips_third_digit_validation(): void
     {
-        // Third digit 6 would fail for regular cedulas
+        // Third digit 6 is also accepted for regular cedulas
         $this->validator->validateCedula('3062345678');
         $this->assertNotEquals(
-            'Third digit must be between 0 and 5 for cedula and natural person RUC',
+            'Third digit must be between 0 and 6 for cedula',
             $this->validator->getError()
         );
 
         // Third digit 9 would fail for regular cedulas
         $this->validator->validateCedula('3092345678');
         $this->assertNotEquals(
-            'Third digit must be between 0 and 5 for cedula and natural person RUC',
+            'Third digit must be between 0 and 6 for cedula',
             $this->validator->getError()
         );
     }

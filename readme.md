@@ -165,7 +165,7 @@ ValidadorEc::TYPE_RUC_PUBLIC   // 'ruc_public'
 
 | Document Type | Digits | Third Digit | Algorithm |
 |--------------|--------|-------------|-----------|
-| Cedula | 10 | 0-5* | Modulo 10 |
+| Cedula | 10 | 0-6* | Modulo 10 |
 | RUC Natural Person | 13 | 0-5* | Modulo 10 |
 | RUC Private Company | 13 | 9 | Modulo 11 |
 | RUC Public Company | 13 | 6 | Modulo 11 |
