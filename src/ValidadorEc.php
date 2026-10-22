@@ -441,7 +441,7 @@ final class ValidadorEc
     private function assertValidThirdDigit(int $digit, string $type): void
     {
         $isValid = match ($type) {
-            self::TYPE_CEDULA => $digit >= 0 && $digit <= 6,
+            self::TYPE_CEDULA      => $digit >= 0 && $digit <= 6,
             self::TYPE_RUC_NATURAL => $digit >= 0 && $digit <= 5,
             self::TYPE_RUC_PRIVATE => $digit === 9,
             self::TYPE_RUC_PUBLIC  => $digit === 6,
@@ -450,7 +450,7 @@ final class ValidadorEc
 
         if (!$isValid) {
             $message = match ($type) {
-                self::TYPE_CEDULA => 'Third digit must be between 0 and 6 for cedula',
+                self::TYPE_CEDULA      => 'Third digit must be between 0 and 6 for cedula',
                 self::TYPE_RUC_NATURAL => 'Third digit must be between 0 and 5 for cedula and natural person RUC',
                 self::TYPE_RUC_PRIVATE => 'Third digit must be 9 for private companies',
                 self::TYPE_RUC_PUBLIC  => 'Third digit must be 6 for public companies',
